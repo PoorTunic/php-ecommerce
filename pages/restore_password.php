@@ -4,13 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control</title>
-
-    <?php require "../php/cdn.php" ?>
+    <title>Restaurar Contraseña</title>
 </head>
 
 <body>
-    Control de Inventario
+    Restaurar contraseña
 </body>
 
 </html>
