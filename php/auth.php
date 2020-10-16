@@ -18,6 +18,11 @@ if (isset($_POST["submit"])) {
             $_SESSION["level"] = $result["nivel"];
 
             if ($result["nivel"] == 1 || $result["nivel"] == 2) {
+                if ($result["nivel"] == 1) {
+                    $_SESSION["role"] = "admin";
+                } else if ($result["nivel"] == 2) {
+                    $_SESSION["role"] = "manager";
+                }
                 header("Location: ../pages/control.php");
             } else if ($result["nivel"] == 3) {
                 header("Location: ../index.php");

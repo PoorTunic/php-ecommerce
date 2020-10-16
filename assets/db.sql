@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `t_usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
 
 INSERT INTO t_usuarios(correo, pass, nivel, `status`) VALUES('daniel.clementea97@gmail.com', 'Qwe123$$', 1, 1);
-INSERT INTO t_usuarios(correo, pass, nivel, `status`) VALUES('minedan1057@gmail.com', 'Qwe123$$', 1, 2);
-INSERT INTO t_usuarios(correo, pass, nivel, `status`) VALUES('daguirre97@hotmail.com', 'Qwe123$$', 1, 3);
+INSERT INTO t_usuarios(correo, pass, nivel, `status`) VALUES('minedan1057@gmail.com', 'Qwe123$$', 2, 1);
+INSERT INTO t_usuarios(correo, pass, nivel, `status`) VALUES('daguirre97@hotmail.com', 'Qwe123$$', 3, 1);
 
+DROP DATABASE web_project;
