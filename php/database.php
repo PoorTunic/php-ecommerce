@@ -14,7 +14,7 @@ function connect_db()
 
 function login($conn, $username, $password)
 {
-    $qry = "SELECT * FROM t_usuarios WHERE correo='$username' AND pass='$password';";
+    $qry = "SELECT * FROM t_usuario WHERE correo='$username' AND pass='$password';";
     $result = mysqli_query($conn, $qry);
     $rows = mysqli_num_rows($result);
     if ($rows > 0) {
@@ -26,7 +26,7 @@ function login($conn, $username, $password)
 
 function getAll($conn)
 {
-    $res = mysqli_query($conn, "SELECT * FROM t_usuarios WHERE correo='daniel.clementea97@gmail.com' AND pass='Qwe123$$'");
+    $res = mysqli_query($conn, "SELECT * FROM t_usuario WHERE correo='daniel.clementea97@gmail.com' AND pass='Qwe123$$'");
     $assoc = mysqli_fetch_assoc($res);
     echo mysqli_num_rows($res);
     return $assoc;
