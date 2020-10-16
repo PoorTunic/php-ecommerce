@@ -12,14 +12,11 @@ session_start();
 
     <?php require "../php/cdn.php" ?>
 </head>
-
+<?php $load = isset($_GET['content']) ? strtolower($_GET['content']) : 'initial-page'?>
 <body>
-    <?php
 
-    ?>
     <div class="container">
         <nav class="text-white navbar navbar-expand navbar-toggler" style="background-color: black; color: white; width: 100%">
-
             <div class="collapse navbar-collapse d-flex flex-row-reverse" id="navbarNav">
                 <div>
                     <ul class="navbar-nav">
@@ -35,29 +32,8 @@ session_start();
                 </div>
             </div>
         </nav>
-
-        <div class="row">
-            <div class="col-sm-12 col-md-4 mx-auto">
-                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="btn-group-vertical" role="group" aria-label="First group">
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-home" style="max-width:100%"> Inicio</button>
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-user" style="max-width:100%"> Administradores</button>
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-user-o" style="max-width:100%"> Clientes</button>
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-bars" style="max-width:100%"> Categorías</button>
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-users" style="max-width:100%"> Proveedores</button>
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-laptop" style="max-width:100%"> Productos</button>
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-shopping-cart" style="max-width:100%"> Compras</button>
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-arrow-right" style="max-width:100%"> Slider</button>
-                        <button type="button" class="btn btn-primary btn-block p-2 bg-dark text-white fa fa-sign-out" style="max-width:100%"> Salir</button>
-                    </div>
-
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-8 mx-auto">
-                <br><br>
-                <h1 class="display-4">BIENVENIDO AL SISTEMA</h1>
-            </div>
-        </div>
+        <?php require_once('administrator_menu.php')?>
+        <?php require_once($load.'.php')?>
     </div>
 </body>
 

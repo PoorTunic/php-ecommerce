@@ -2,9 +2,9 @@
 function connect_db()
 {
     //Remote
-    $conn = mysqli_connect("sql203.epizy.com", "epiz_26945682", "8sSXrvIeafh", "epiz_26945682_web_project");
+    //$conn = mysqli_connect("sql203.epizy.com", "epiz_26945682", "8sSXrvIeafh", "epiz_26945682_web_project");
     //Local
-    //$conn = mysqli_connect("localhost:3306", "root", "", "web_project");
+    $conn = mysqli_connect("localhost:3306", "root", "", "web_project");
     if (!$conn) {
         echo "Error connecting to DB";
         exit;
