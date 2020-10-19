@@ -1,3 +1,8 @@
+<?php
+session_start();
+require "php/auth.php";
+recognize();
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -9,35 +14,44 @@
     <?php require "php/cdn.php" ?>
 </head>
 
-<body>
+<body class="container">
     <?php require "php/header.php" ?>
 
-    <?php
-    require_once "php/pagination.php";
-    require "php/database.php";
 
-    $conn = connect_db();
+    <div class="card-deck">
+        <?php
+        require_once "php/pagination.php";
+        require "php/database.php";
 
-    $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $conn = connect_db();
 
-    $query = "SELECT id_producto, producto, preven, descripcion, imagen, id_categoria, categoria FROM t_producto NATURAL JOIN t_categoria";
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 
-    $Paginator = new Paginator($conn, $query);
+        $query = "SELECT id_producto, producto, preven, descripcion, imagen, id_categoria, categoria FROM t_producto NATURAL JOIN t_categoria";
 
-    $results = $Paginator->getData($page);
+        $Paginator = new Paginator($conn, $query);
 
-    echo $Paginator->getQuery() . "<br>";
-    ?>
+        $results = $Paginator->getData($page);
 
-    <?php for ($i = 1; $i < count($results->data); $i++) : ?>
-        <tr>
-            <td><?php echo $results->data[$i]['producto']; ?></td> <br>
-        </tr>
-    <?php endfor; ?>
+        ?>
+
+        <?php for ($i = 1; $i < count($results->data); $i++) : ?>
+            <div class="card col-xs-3 col-md-3">
+                <img class="card-img-top" src="https://www.teknofilo.com/wp-content/uploads/2020/05/iPhone-12.jpg" alt="Card image cap">
+                <div class="card-body">
+                    <h3 class="card-title no-right-margin" style="font-size: 20px;"><a class="text-dark" href="./pages/product.php?product_id=<?= $results->data[$i]["id_producto"] ?>"><?php echo $results->data[$i]['producto']; ?></a></h3>
+                    <p class="card-text text-muted" style="font-size: 13px;">TVS</p>
+                    <p style="color: #FF9600; font-size: 18px; font-style: italic; font-weight: bold;" class="card-text">&dollar;<?php echo $results->data[$i]['preven']; ?></p>
+                </div>
+            </div>
+        <?php endfor; ?>
+    </div>
 
     <?php echo $Paginator->createLinks('pagination pagination-sm'); ?>
 
+
     <?php require "php/footer.php" ?>
+
 </body>
 
 </html>

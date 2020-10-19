@@ -1,11 +1,12 @@
 <?php
 
-include "../php/database.php";
+include_once "database.php";
 
-session_start();
+if (!isset($_SESSION)) {
+    session_start();
+}
 
 if (isset($_POST["submit"])) {
-
     $username = $_POST["username"];
     $password = $_POST["password"];
     if ($username != "" and $password != "") {
@@ -32,6 +33,16 @@ if (isset($_POST["submit"])) {
         }
     }
 }
+
 if (isset($_POST["reset"])) {
     header("Location: ../pages/restore_password.php");
+}
+
+function recognize()
+{
+    if (isset($_SESSION['username']) && !empty($_SESSION['username'])) {
+        if ($_SESSION["level"] == 1 || $_SESSION["level"] == 2) {
+            header("Location: pages/control.php");
+        }
+    }
 }

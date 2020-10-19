@@ -1,4 +1,9 @@
 <?php
-session_destroy();
-header("Location: ../index.php");
-?>
+if (isset($_GET["exit"])) {
+    session_start();
+    unset($_SESSION);
+    session_destroy();
+    session_write_close();
+    header('Location: ../index.php');
+    die;
+}

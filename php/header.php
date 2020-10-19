@@ -7,7 +7,7 @@
         if (host == "http://localhost") {
             host = host + "/web-app-project";
         }
-        
+
         if (route == "\/") {
             window.location = host;
             return;
@@ -37,12 +37,26 @@
                 <li class="nav-item">
                     <a class="nav-link btn-primary" onclick="go('/product');"><em>PRODUCTOS</em></a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link btn-primary" onclick="go('/login');"><em>INGRESAR</em></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn-primary" onclick="go('/about');"><em>?</em></a>
-                </li>
+                <?php
+                if (isset($_SESSION["username"])) {
+                ?>
+                    <li class="nav-item">
+                        <a class="nav-link btn-primary" onclick="go('/cart');"><em>CARRITO</em></a>
+                    </li>
+                    <li class="nav-item">
+                        <form action="php/logout.php" method="GET">
+                            <button class="nav-link btn-primary" name="exit" value="logout" type="submit">SALIR</a>
+                        </form>
+                    </li>
+                <?php
+                } else {
+                ?>
+                    <li class="nav-item">
+                        <a class="nav-link btn-primary" onclick="go('/login');"><em>INGRESAR</em></a>
+                    </li>
+                <?php
+                }
+                ?>
             </ul>
         </div>
     </nav>

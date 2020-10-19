@@ -12,7 +12,7 @@
 </head>
 
 <?php
-include "../php/database.php";
+include_once "../php/database.php";
 ?>
 
 <body>

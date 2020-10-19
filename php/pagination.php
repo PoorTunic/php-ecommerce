@@ -1,4 +1,5 @@
 <?php
+
 class Paginator
 {
     private $_conn;
@@ -6,7 +7,6 @@ class Paginator
     private $_page;
     private $_query;
     private $_total;
-    private $_applied_query;
 
     public function __construct($conn, $query)
     {
@@ -19,7 +19,7 @@ class Paginator
 
     public function getData($page = 1)
     {
-        $limit = 10;
+        $limit = 3;
         $results[] = [];
         $this->_limit = $limit;
         $this->_page = $page;
@@ -46,7 +46,7 @@ class Paginator
         return $result;
     }
 
-    public function createLinks($list_class)
+    public function createLinks()
     {
         $links = 2;
         if ($this->_limit == 'all') {
@@ -58,36 +58,31 @@ class Paginator
         $start      = (($this->_page - $links) > 0) ? $this->_page - $links : 1;
         $end        = (($this->_page + $links) < $last) ? $this->_page + $links : $last;
 
-        $html       = '<ul class="' . $list_class . '">';
+        $html       = '<ul class="pagination">';
 
         $class      = ($this->_page == 1) ? "disabled" : "";
-        $html       .= '<li class="' . $class . '"><a href="?page=' . ($this->_page - 1) . '">&laquo;</a></li>';
+        $html       .= '<li class="page-item ' . $class . '"><a class="page-link" href="?page=' . ($this->_page - 1) . '">&laquo;</a></li>';
 
         if ($start > 1) {
-            $html   .= '<li><a href="?page=1">1</a></li>';
-            $html   .= '<li class="disabled"><span>...</span></li>';
+            $html   .= '<li class="page-item"><a class="page-link" href="?page=1">1</a></li>';
+            $html   .= '<li class="page-item disabled"><span class="page-link">...</span></li>';
         }
 
         for ($i = $start; $i <= $end; $i++) {
             $class  = ($this->_page == $i) ? "active" : "";
-            $html   .= '<li class="' . $class . '"><a href="?page=' . $i . '">' . $i . '</a></li>';
+            $html   .= '<li class="page-item ' . $class . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
         }
 
         if ($end < $last) {
-            $html   .= '<li class="disabled"><span>...</span></li>';
-            $html   .= '<li><a href="?page=' . $last . '">' . $last . '</a></li>';
+            $html   .= '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            $html   .= '<li class="page-item"><a class="page-link" href="?page=' . $last . '">' . $last . '</a></li>';
         }
 
         $class      = ($this->_page == $last) ? "disabled" : "";
-        $html       .= '<li class="' . $class . '"><a href="?page=' . ($this->_page + 1) . '">&raquo;</a></li>';
+        $html       .= '<li class="page-item ' . $class . '"><a class="page-link" href="?page=' . ($this->_page + 1) . '">&raquo;</a></li>';
 
         $html       .= '</ul>';
 
         return $html;
-    }
-
-    public function getQuery()
-    {
-        return $this->_applied_query;
     }
 }
