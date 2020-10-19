@@ -24,7 +24,7 @@
     <a class="nav-link <?php echo $load == 'slider' ? 'active' : '' ?>" href="?content=slider">Slider</a>
   </li>
   <li class="nav-item">
-    <form action="../php/logout.php" method="GET">
+    <form action="../../php/logout.php" method="GET">
       <button class="nav-link" name="exit" type="submit" value="logout">Salir</button>
     </form>
   </li>

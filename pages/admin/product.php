@@ -17,7 +17,7 @@
     });
 </script>
 <?php
-  include "../php/database.php";
+  include "../../php/database.php";
   $conn = connect_db();
 
   $paginas = 5;
@@ -65,7 +65,7 @@
 
     if(isset($_FILES['archivo']['tmp_name']) && $_FILES['archivo']['tmp_name'] != ""){
       $imagen = $_FILES['archivo']['name'];
-      $ruta_imagen = '../img/'.$imagen;
+      $ruta_imagen = '../../img/'.$imagen;
       $cat = $_POST['cat'];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
@@ -359,7 +359,7 @@
 
     if(isset($_FILES['archivo']['tmp_name']) && $_FILES['archivo']['tmp_name'] != ""){
       $imagen = $_FILES['archivo']['name'];
-      $ruta_imagen = '../img/'.$imagen;
+      $ruta_imagen = '../../img/'.$imagen;
       $cat = $_POST['cat'];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 

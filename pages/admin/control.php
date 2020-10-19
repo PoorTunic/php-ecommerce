@@ -10,14 +10,18 @@ session_start();
 
     <title>Control</title>
 
-    <?php require "../php/cdn.php" ?>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css" >
+
+    <script src="../../js/jquery-3.3.1.slim.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/popper.min.js"></script>
 </head>
 <?php $load = isset($_REQUEST['content']) ? strtolower($_REQUEST['content']) : 'initial-page'?>
 <body>
     <div class="container">
         <nav class="navbar navbar-light bg-light">
           <a class="navbar-brand">Bienvenido(a): <?php echo $_SESSION["username"]; ?></a>
-          <img class="img img-fluid" src="../img/techstore.png">
+          <img class="img img-fluid" src="../../img/techstore.png">
         </nav>
         <?php require_once('administrator_menu.php')?>
         <br>
