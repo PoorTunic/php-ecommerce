@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs bg-light">
   <li class="nav-item">
     <a class="nav-link <?php echo $load == 'initial-page' ? 'active' : '' ?>" href="?content=initial-page">Inicio</a>
   </li>
