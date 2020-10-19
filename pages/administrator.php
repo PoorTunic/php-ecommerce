@@ -1,1 +1,3 @@
-<h1>Add administrator</h1>
+<nav class="navbar navbar-light bg-white">
+  <a class="navbar-brand">Administradores</a>
+</nav>
