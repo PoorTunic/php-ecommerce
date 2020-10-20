@@ -7,6 +7,44 @@
     $('#delModal' + id).modal('show');
   }
 
+  //Inicio validaciones
+
+
+
+  $(document).ready(function (){
+
+    $('select').change(function(){
+      $('#registrar').attr("disabled", false);
+    });
+
+    $('input[type="file"]').change(function(){
+
+        var filename = $("#archivo").val() != ''? $("#archivo").val() : $("#archivoUpd").val();
+
+        if(filename == null)
+             alert('No ha seleccionado una imagen');
+        else{
+             var extension = filename.replace(/^.*\./, '');
+
+             if (extension == filename)
+                 extension = '';
+             else{
+                 extension = extension.toLowerCase();
+
+                 if(!((extension == 'jpg') || (extension == 'png') ||
+                    (extension == 'jpeg') || (extension == 'webp'))){
+                      alert("Solo se aceptan archivos con extensión: jpg, jpeg, png y webp");
+                      $("#archivo").val("");
+                      $("#archivoUpd").val("");
+                    }
+           }
+        }
+
+    });
+  });
+
+  //Fin validaciones
+
   $('#exampleModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
     var recipient = button.data('whatever') // Extract info from data-* attributes
@@ -16,21 +54,38 @@
     modal.find('.modal-title').text('Nuevo ' + recipient)
     });
 </script>
+
 <?php
   include "../../php/database.php";
   $conn = connect_db();
 
   $paginas = 5;
   $sinres = FALSE;
-  $cantidad = mysqli_fetch_assoc(mysqli_query($conn, "SELECT count(*) as conteo FROM t_producto"))["conteo"];
+  $sqlquery = "";
+  $qryrows = "";
+  $dato = "";
+  if (isset($_REQUEST['buscarDato'])){
+    $dato = $_REQUEST['data'];
+    if(is_string($dato)){
+      $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or imagen LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
+      $qryrows = "SELECT count(*) as conteo FROM t_producto NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or imagen LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
+    } else {
+      $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE precom = $dato or preven = $dato";
+      $qryrows = "SELECT count(*) as conteo FROM t_producto NATURAL JOIN t_categorias WHERE precom = $dato or preven = $dato";
+    }
+  } else {
+    $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias";
+    $qryrows = "SELECT count(*) as conteo FROM t_producto";
+  }
+
+  $cantidad = mysqli_fetch_assoc(mysqli_query($conn, $qryrows))["conteo"];
+
   if($cantidad == 0){
     $sinres = TRUE;
     $np = 1 % $paginas == 0? (1 / $paginas) : (floor(1 / $paginas) + 1);
   } else {
     $np = $cantidad % $paginas == 0? ($cantidad / $paginas) : (floor($cantidad / $paginas) + 1);
   }
-
-
 
   $pag = isset($_GET['part'])? $_GET['part'] : 1;
   if(!is_numeric($pag) || $pag <= 0){
@@ -54,8 +109,10 @@
 <input type='hidden' value="<?php echo $pag?>" id='parte'>
 <nav class="navbar navbar-light bg-white">
   <a class="navbar-brand">Productos</a>
+  <button type="button" class="btn btn-outline-primary" onclick="location.href = 'control.php?content=product'">Ver todo</button>
 </nav>
 <?php
+
   if(isset($_POST['registrar'])){
     $prod = $_POST['prod'];
     $precom = $_POST['precom'];
@@ -70,15 +127,21 @@
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
       $ins = "INSERT INTO t_producto VALUES (null, '$prod', $precom, $preven, '$desc', '$ruta_imagen', $idcat)";
+
       $info = "";
 
       if($conn->query($ins) === TRUE){
-
-        if(copy($_FILES["archivo"]["tmp_name"], $ruta_imagen)){
-          $info = "Producto agregado. Se actualizará la lista de productos.";
+        if($rowsql=mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_producto as id FROM t_producto ORDER by id_producto DESC LIMIT 1"))){
+          $insimgslider = "INSERT INTO t_imagenes VALUES (null, '/img/$imagen',".$rowsql["id"].",1, 1)";
+          if($conn->query($insimgslider) === TRUE){
+            if(copy($_FILES["archivo"]["tmp_name"], $ruta_imagen)){
+              $info = "Producto agregado. Se actualizará la lista de productos.";
+            }
+          } else {
+            $info = "Error en la inserción de los datos, vuelva a intentarlo.";
+          }
         }
       } else {
-
         $info = "Error en la inserción de los datos, vuelva a intentarlo.";
       }
       echo "<div class='modal' tabindex='-1' role='dialog' id='myModal'>
@@ -86,7 +149,7 @@
                 <div class='modal-content'>
                   <div class='modal-header'>
                     <h5 class='modal-title'>Cuadro de información</h5>
-                    <button type='button' class='close' data-dismiss='modal' aria-label='Cerrar' onclick='goToPart($np)'>
+                    <button type='button' class='close' data-dismiss='modal' aria-label='Cerrar' onclick='goToPart($np + 1)'>
                       <span aria-hidden='true'>&times;</span>
                     </button>
                   </div>
@@ -94,7 +157,7 @@
                     <p>$info</p>
                   </div>
                   <div class='modal-footer'>
-                    <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart($np)'>Ver producto agregado</button>
+                    <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart($np + 1)'>Ver producto agregado</button>
                   </div>
                 </div>
               </div>
@@ -106,10 +169,12 @@
 ?>
 <nav class="navbar navbar-light bg-light justify-content-between">
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="producto">Nuevo producto</button>
-  <form class="form-inline">
-    <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+
+  <form class="form-inline" action="control.php?content=product" method="post">
+    <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" id="data" name="data" required>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buscarDato" name="buscarDato">Buscar</button>
   </form>
+
 </nav>
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -124,7 +189,7 @@
         <form action="control.php?content=product" method="post" enctype="multipart/form-data">
           <div class="form-group">
             <label for="prod" class="col-form-label">Nombre:</label>
-            <input type="text" class="form-control" name="prod" placeholder="Nombre del producto" required>
+            <input type="text" class="form-control" name="prod" placeholder="Nombre del producto" required maxlength="150">
           </div>
           <div class="form-group">
             <label for="precom" class="col-form-label">Precio de compra:</label>
@@ -155,7 +220,7 @@
           <div class="form-group">
             <label for="cat" class="col-form-label">Categoría</label>
             <select name="cat" class="form-control">
-              <option selected>Elegir...</option>
+              <option selected disabled>Elegir...</option>
               <?php
                 $cons = "SELECT categoria FROM t_categorias";
                 $res = mysqli_query($conn, $cons);
@@ -167,7 +232,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            <button type="submit" class="btn btn-primary" name="registrar">Agregar</button>
+            <button type="submit" class="btn btn-primary" name="registrar" id="registrar" disabled>Agregar</button>
           </div>
         </form>
       </div>
@@ -192,32 +257,35 @@
     </thead>
     <tbody>
       <?php
-      if($sinres){
-        echo '<tr>
-                <th colspan="8" class="text-center text-danger" >
-                  No hay resultados
-                </th>
-              </tr>';
-      } else {
-        $qry = "SELECT * FROM t_producto NATURAL JOIN t_categorias LIMIT $ni, $paginas";
-        $result = mysqli_query($conn, $qry);
-        while($row=mysqli_fetch_assoc($result)){
-          modalforupdate($row['id_producto'], $pag);
-          modalfordelete($row['id_producto'], $pag);
-          echo '<tr>
-                  <th>'.$row['producto'].'</th>
-                  <td>$'.$row['precom'].'</td>
-                  <td>$'.$row['preven'].'</td>
-                  <td>'.$row['descripcion']."</td>
-                  <td><img src='".$row['imagen']."' style='height: 50px;'></td>
-                  <td>".$row['categoria'].'</td>
-                  <td><button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#updModal'.$row['id_producto'].'" data-whatever="producto">Editar</button></td>';
 
-          echo "<td><button type='button' class='btn btn-outline-danger' onclick='openDeleteConfirmation(".$row['id_producto'].");'>Eliminar</button></td>
-                </tr>
-              ";
+        if($sinres){
+          echo '<tr>
+                  <th colspan="8" class="text-center text-danger" >
+                    No hay resultados
+                  </th>
+                </tr>';
+        } else {
+          $sqlquery = $sqlquery." LIMIT $ni, $paginas";
+
+          $result = mysqli_query($conn, $sqlquery);
+          while($row=mysqli_fetch_assoc($result)){
+            modalforupdate($row['id_producto'], $pag);
+            modalfordelete($row['id_producto'], $pag);
+            echo '<tr>
+                    <th>'.$row['producto'].'</th>
+                    <td>$'.$row['precom'].'</td>
+                    <td>$'.$row['preven'].'</td>
+                    <td>'.$row['descripcion']."</td>
+                    <td><img src='".$row['imagen']."' style='height: 50px;'></td>
+                    <td>".$row['categoria'].'</td>
+                    <td><button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#updModal'.$row['id_producto'].'" data-whatever="producto">Editar</button></td>';
+
+            echo "<td><button type='button' class='btn btn-outline-danger' onclick='openDeleteConfirmation(".$row['id_producto'].");'>Eliminar</button></td>
+                  </tr>
+                ";
+          }
         }
-      }
+
       ?>
     </tbody>
   </table>
@@ -225,15 +293,15 @@
 <nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
     <li class="page-item <?php echo $pag == 0 || $pag == 1? 'disabled' : ''?>">
-      <a class="page-link" href="control.php?content=product&part=<?php echo $pag != 0? ($pag-1).'' : '1'?>">Anterior</a>
+      <a class="page-link" href="control.php?content=product&part=<?php echo $pag != 0? ($pag-1).'' : '1'; echo ($dato != ""? "&buscarDato=true&data=$dato" : "");?>">Anterior</a>
     </li>
     <?php
       for ($i=1; $i <= $np; $i++) {
-        echo "<li class='page-item ".($i!=$pag? "" : "active")."'><a class='page-link' href='".($i!=$pag? "control.php?content=product&part=".$i : "#")."'>".$i."</a></li>";
+        echo "<li class='page-item ".($i!=$pag? "" : "active")."'><a class='page-link' href='".($i!=$pag? "control.php?content=product&part=".$i : "#").($dato != ""? "&buscarDato=true&data=$dato" : "")."'>".$i."</a></li>";
       }
     ?>
     <li class="page-item <?php echo $pag == $np? 'disabled' : ''?>">
-      <a class="page-link" href="control.php?content=product&part=<?php echo $pag != $np? ($pag+1).'' : $np.''?>">Siguiente</a>
+      <a class="page-link" href="control.php?content=product&part=<?php echo $pag != $np? ($pag+1).'' : $np.''; echo ($dato != ""? "&buscarDato=true&data=$dato" : "");?>">Siguiente</a>
     </li>
   </ul>
 </nav>
@@ -248,7 +316,7 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="updModalLabel'.$id.'">New message</h5>
+                    <h5 class="modal-title" id="updModalLabel'.$id.'">Actualizar producto</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -259,7 +327,7 @@
                       <input type="hidden" value="'.$row['imagen'].'" name="rutaimg">
                       <div class="form-group">
                         <label for="prod" class="col-form-label">Nombre:</label>
-                        <input value="'.$row['producto'].'"type="text" class="form-control" name="prod" placeholder="Nombre del producto" required>
+                        <input maxlength="150" value="'.$row['producto'].'"type="text" class="form-control" name="prod" placeholder="Nombre del producto" required>
                       </div>
                       <div class="form-group">
                         <label for="precom" class="col-form-label">Precio de compra:</label>
@@ -285,7 +353,8 @@
                       </div>
                       <div class="form-group">
                         <label class="col-form-label">Imagen</label>
-                        <input type="file" class="form-control-file" name="archivo" id="archivo" accept="image/png, image/jpeg, image/gif, image/webp">
+                        <small class="text-primary">*Si quiere conservar la imagen original, puede omitir este campo</small>
+                        <input type="file" class="form-control-file" name="archivo" id="archivoUpd" accept="image/png, image/jpeg, image/gif, image/webp">
                       </div>
                       <div class="form-group">
                         <label for="cat" class="col-form-label">Categoría</label>
@@ -365,10 +434,13 @@
 
       $upd = "UPDATE t_producto SET producto = '$prod', precom = $precom, preven = $preven, descripcion = '$desc', imagen = '$ruta_imagen', id_categoria = $idcat WHERE id_producto = ".$id;
       $info = "";
+      $rt = "/img".$imagen;
 
       if($conn->query($upd) === TRUE){
-        if(copy($_FILES["archivo"]["tmp_name"], $ruta_imagen)){
-          $info = "Producto actualizado. Se actualizará la lista de productos.";
+        if($conn->query("UPDATE t_imagenes SET imagen = '$rt' WHERE id_producto = $id") == TRUE){
+          if(copy($_FILES["archivo"]["tmp_name"], $ruta_imagen)){
+            $info = "Producto actualizado. Se actualizará la lista de productos.";
+          }
         }
       } else {
         $info = "Error en la actualización de los datos, vuelva a intentarlo.";
