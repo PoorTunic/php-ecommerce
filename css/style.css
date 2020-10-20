@@ -1,0 +1,71 @@
+body {
+    background-color: #eee;
+}
+
+.header-custom {
+    background-color: #154a87;
+    box-shadow: none !important;
+    background: #154a87 url(https://themes.laborator.co/aurum/tech/wp-content/uploads/2014/11/map.png) no-repeat 5% 50% !important;
+}
+
+.navbar-collapse {
+    float: left;
+    width: 100%;
+    clear: both;
+}
+
+@media (min-width: 768px) {
+    .navbar-right {
+        margin-top: -50px;
+    }
+}
+
+.btn-primary {
+    color: white;
+    background-color: transparent;
+    border-color: transparent;
+    /*set the color you want here*/
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open>.dropdown-toggle.btn-primary {
+    color: #fff;
+    background-color: #ff9600;
+    border-color: #ff9600;
+    /*set the color you want here*/
+}
+
+.w-100 {
+    width: 100% !important;
+    height: 40vh;
+}
+
+.img-custom {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.card-img-fit {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.required {
+    content: "*";
+    color: red;
+}
+
+hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 0;
+    border-top: 5px solid rgb(0, 0, 0);
+}
+
+.footer-custom {
+    background-color: #154a87;
+}

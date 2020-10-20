@@ -24,7 +24,7 @@ if (isset($_POST["submit"])) {
                 } else if ($result["nivel"] == 2) {
                     $_SESSION["role"] = "manager";
                 }
-                header("Location: ../pages/control.php");
+                header("Location: ../pages/admin/control.php");
             } else if ($result["nivel"] == 3) {
                 header("Location: ../index.php");
             }
