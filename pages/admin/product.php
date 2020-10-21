@@ -9,8 +9,6 @@
 
   //Inicio validaciones
 
-
-
   $(document).ready(function (){
 
     $('select').change(function(){
@@ -66,12 +64,12 @@
   $dato = "";
   if (isset($_REQUEST['buscarDato'])){
     $dato = $_REQUEST['data'];
-    if(is_string($dato)){
-      $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or imagen LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
-      $qryrows = "SELECT count(*) as conteo FROM t_producto NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or imagen LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
+    if(is_numeric($dato)){
+      $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE preven = $dato or precom = $dato";
+      $qryrows = "SELECT count(*) as conteo FROM t_producto NATURAL JOIN t_categorias WHERE preven = $dato or precom = $dato";
     } else {
-      $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE precom = $dato or preven = $dato";
-      $qryrows = "SELECT count(*) as conteo FROM t_producto NATURAL JOIN t_categorias WHERE precom = $dato or preven = $dato";
+      $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
+      $qryrows = "SELECT count(*) as conteo FROM t_producto NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
     }
   } else {
     $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias";
@@ -171,8 +169,8 @@
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="producto">Nuevo producto</button>
 
   <form class="form-inline" action="control.php?content=product" method="post">
-    <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" id="data" name="data" required>
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buscarDato" name="buscarDato">Buscar</button>
+    <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" id="data" name="data" value="<?php echo $dato != ""? $dato : "" ?>" required>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buscarDato" name="buscarDato" >Buscar</button>
   </form>
 
 </nav>
@@ -231,7 +229,7 @@
             </select>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             <button type="submit" class="btn btn-primary" name="registrar" id="registrar" disabled>Agregar</button>
           </div>
         </form>
@@ -525,5 +523,4 @@ if(isset($_POST['eliminar'])){
     echo "<script>$('#delModal').modal('show');</script>";
   }
 }
-
 ?>
