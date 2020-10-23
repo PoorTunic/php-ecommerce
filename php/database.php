@@ -17,7 +17,7 @@ if (!function_exists("connect_db")) {
 if (!function_exists("login")) {
     function login($conn, $username, $password)
     {
-        $qry = "SELECT * FROM t_usuario WHERE correo='$username' AND pass='$password';";
+        $qry = "SELECT * FROM t_usuarios WHERE correo='$username' AND contrapass='$password';";
         $result = mysqli_query($conn, $qry);
         $rows = mysqli_num_rows($result);
         if ($rows > 0) {

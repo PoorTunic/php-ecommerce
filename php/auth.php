@@ -16,10 +16,10 @@ if (isset($_POST["submit"])) {
             $_SESSION["username"] = $username;
             $_SESSION["logged"] = true;
 
-            $_SESSION["level"] = $result["nivel"];
+            $_SESSION["level"] = $result["nevel"];
 
-            if ($result["nivel"] == 1 || $result["nivel"] == 2) {
-                if ($result["nivel"] == 1) {
+            if ($result["nevel"] == 1 || $result["nevel"] == 2) {
+                if ($result["nevel"] == 1) {
                     $_SESSION["role"] = "admin";
                 } else if ($result["nivel"] == 2) {
                     $_SESSION["role"] = "manager";
