@@ -625,19 +625,20 @@
 
     if(isset($_FILES['archivo']['tmp_name']) && $_FILES['archivo']['tmp_name'] != ""){
       $imagen = $_FILES['archivo']['name'];
-      $ruta_imagen = '../../img/'.$imagen;
+      $ruta_imagen = '../../img/';
       $cat = $_POST['cat'];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
-      $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$ruta_imagen', id_categoria = $idcat WHERE id_producto = ".$id;
+      $rutalt = 'img/'.$id.'_m_'.$imagen;
+      $rutaind = $ruta_imagen.$id.'_m_'.$imagen;
+
+      $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$rutalt', id_categoria = $idcat WHERE id_producto = ".$id;
       $info = "";
-      $rt = "/img".$imagen;
+
 
       if($conn->query($upd) === TRUE){
-        if($conn->query("UPDATE t_imagenes SET imagen = '$rt' WHERE id_producto = $id") == TRUE){
-          if(copy($_FILES["archivo"]["tmp_name"], $ruta_imagen)){
-            $info = "Producto actualizado. Se actualizará la lista de productos.";
-          }
+        if(copy($_FILES["archivo"]["tmp_name"], $rutaind)){
+          $info = "Producto actualizado. Se actualizará la lista de productos.";
         }
       } else {
         $info = "Error en la actualización de los datos, vuelva a intentarlo.";
