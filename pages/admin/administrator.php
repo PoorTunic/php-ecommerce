@@ -305,7 +305,7 @@
             modalfordelete($row['id_usuario'], $pag);
             echo '<tr>
                     <td>'.$row['correo'].'</td>
-                    <td>'.($row['nivel'] == 1? "Administrador(a)" : "Secretario(a)").'</td>
+                    <td>'.($row['nevel'] == 1? "Administrador(a)" : "Secretario(a)").'</td>
                     <td>'.($row['status'] == 1? "Vigente" : "Denegado").'</td>
                     <td><button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#updModal'.$row['id_usuario'].'" data-whatever="usuario">Editar</button></td>';
             echo "<td><button type='button' class='btn btn-outline-danger' onclick='openDeleteConfirmation(".$row['id_usuario'].");'>Eliminar</button></td>
@@ -370,8 +370,8 @@
                         <div class="form-group">
                           <label for="nivel" class="col-form-label">Nivel</label>
                           <select name="nivel" id="nivelupd" class="form-control">
-                            <option selected>'.($row['nivel'] == 1? 'Administrador' : 'Secretario').'</option>
-                            <option>'.($row['nivel'] == 1? 'Secretario' : 'Administrador').'</option>
+                            <option selected>'.($row['nevel'] == 1? 'Administrador' : 'Secretario').'</option>
+                            <option>'.($row['nevel'] == 1? 'Secretario' : 'Administrador').'</option>
                           </select>
                         </div>
                         <div class="modal-footer">
@@ -432,7 +432,7 @@
     $nivel = $_POST['nivel'];
     $id = $_POST['idusuario'];
 
-    $upd = $contrapass == "" ? ("UPDATE t_usuarios SET correo = '$correo', nivel = ".($nivel == 'Administrador'? 1 : 2)." WHERE id_usuario = ".$id) : ("UPDATE t_usuarios SET correo = '$correo', contrapass = '$contrapass', nivel = ".($nivel == 'Administrador'? 1 : 2)." WHERE id_usuario = ".$id);
+    $upd = $contrapass == "" ? ("UPDATE t_usuarios SET correo = '$correo', nevel = ".($nivel == 'Administrador'? 1 : 2)." WHERE id_usuario = ".$id) : ("UPDATE t_usuarios SET correo = '$correo', contrapass = '$contrapass', nevel = ".($nivel == 'Administrador'? 1 : 2)." WHERE id_usuario = ".$id);
     $coin = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as contador FROM t_usuarios WHERE correo = '$correo'"))["contador"] == 1? "D": "";
     $info = "";
 

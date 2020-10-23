@@ -11,11 +11,33 @@
 
   $(document).ready(function (){
 
-    $('select').change(function(){
+    $('#cat').change(function(){
       $('#registrar').attr("disabled", false);
     });
 
-    $('input[type="file"]').change(function(){
+    $("#archivosr").bind('change',function(){
+        // Esto es un Array-like Object
+        //console.log(name_imagen.files);
+
+        //var prueba = Array.from(filesObj);
+        //console.log(prueba);
+
+        var filesObj = archivosr.files;
+
+        var filesArray = Object.keys(filesObj).map(function(key){
+          return filesObj[key];
+        });
+
+        filesArray.forEach(function(file){
+          if(!(file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/webp")){
+            alert("Solo se aceptan archivos con extensión: jpg, jpeg, png y webp");
+            $("#archivosr").val("");
+          }
+        });
+
+      });
+
+    $('#archivo').change(function(){
 
         var filename = $("#archivo").val() != ''? $("#archivo").val() : $("#archivoUpd").val();
 
@@ -51,6 +73,7 @@
     var modal = $(this)
     modal.find('.modal-title').text('Nuevo ' + recipient)
     });
+
 </script>
 
 <?php
@@ -65,15 +88,15 @@
   if (isset($_REQUEST['buscarDato'])){
     $dato = $_REQUEST['data'];
     if(is_numeric($dato)){
-      $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE preven = $dato or precom = $dato";
-      $qryrows = "SELECT count(*) as conteo FROM t_producto NATURAL JOIN t_categorias WHERE preven = $dato or precom = $dato";
+      $sqlquery = "SELECT * FROM t_productos NATURAL JOIN t_categorias WHERE preven = $dato";
+      $qryrows = "SELECT count(*) as conteo FROM t_productos NATURAL JOIN t_categorias WHERE preven = $dato";
     } else {
-      $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
-      $qryrows = "SELECT count(*) as conteo FROM t_producto NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
+      $sqlquery = "SELECT * FROM t_productos NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
+      $qryrows = "SELECT count(*) as conteo FROM t_productos NATURAL JOIN t_categorias WHERE producto like \"%$dato%\" or descripcion LIKE \"%$dato%\" or categoria LIKE \"%$dato%\"";
     }
   } else {
-    $sqlquery = "SELECT * FROM t_producto NATURAL JOIN t_categorias";
-    $qryrows = "SELECT count(*) as conteo FROM t_producto";
+    $sqlquery = "SELECT * FROM t_productos NATURAL JOIN t_categorias";
+    $qryrows = "SELECT count(*) as conteo FROM t_productos";
   }
 
   $cantidad = mysqli_fetch_assoc(mysqli_query($conn, $qryrows))["conteo"];
@@ -113,31 +136,54 @@
 
   if(isset($_POST['registrar'])){
     $prod = $_POST['prod'];
-    $precom = $_POST['precom'];
     $preven = $_POST['preven'];
     $desc = $_POST['desc'];
 
-
     if(isset($_FILES['archivo']['tmp_name']) && $_FILES['archivo']['tmp_name'] != ""){
       $imagen = $_FILES['archivo']['name'];
-      $ruta_imagen = '../../img/'.$imagen;
+      $ruta_imagen = '../../img/';
       $cat = $_POST['cat'];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
-      $ins = "INSERT INTO t_producto VALUES (null, '$prod', $precom, $preven, '$desc', '$ruta_imagen', $idcat)";
+      $ins = "INSERT INTO t_productos VALUES (null, '$prod', $preven, '$desc', '$ruta_imagen', $idcat)";
 
       $info = "";
 
+
       if($conn->query($ins) === TRUE){
-        if($rowsql=mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_producto as id FROM t_producto ORDER by id_producto DESC LIMIT 1"))){
-          $insimgslider = "INSERT INTO t_imagenes VALUES (null, '/img/$imagen',".$rowsql["id"].",1, 1)";
-          if($conn->query($insimgslider) === TRUE){
-            if(copy($_FILES["archivo"]["tmp_name"], $ruta_imagen)){
-              $info = "Producto agregado. Se actualizará la lista de productos.";
+        if($rowsql=mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_producto as id, imagen FROM t_productos ORDER by id_producto DESC LIMIT 1"))){
+
+            foreach($_FILES["archivosr"]['tmp_name'] as $key => $tmp_name){
+
+          		if($_FILES["archivosr"]["name"][$key]) {
+          			$filename = $_FILES["archivosr"]["name"][$key]; //Obtenemos el nombre original del archivo
+          			$source = $_FILES["archivosr"]["tmp_name"][$key]; //Obtenemos un nombre temporal del archivo
+                $id = $rowsql['id'];
+          			$directorio = $rowsql["imagen"]; //Declaramos un  variable con la ruta donde guardaremos los archivos
+
+          			$dir=opendir($directorio); //Abrimos el directorio de destino
+          			$target_path = '../../img/'.$id.'_'.$filename; //Indicamos la ruta de destino, así como el nombre del archivo
+
+                if(copy($source, $target_path)){
+                  $ruta = 'img/'.$id.'_'.$filename;
+                  $idprod = $rowsql["id"];
+                  $insimgslider = "INSERT INTO t_imagenes VALUES (null, '$ruta', $idprod, 1, 1)";
+                  $conn->query($insimgslider);
+                }
+
+          			closedir($dir); //Cerramos el directorio de destino
+          		}
+          	}
+
+            $rutaact = 'img/'.$rowsql["id"].'_main_'.$filename;
+            $rutaind = $ruta_imagen.$rowsql["id"].'_m_'.$imagen;
+            $rutalt = 'img/'.$rowsql["id"].'_m_'.$imagen;
+            if($conn->query("UPDATE t_productos SET imagen = '$rutalt' WHERE id_producto = ".$rowsql["id"])){
+              if(copy($_FILES["archivo"]["tmp_name"], $rutaind)){
+                $info = "Producto agregado. Se actualizará la lista de productos.";
+              }
             }
-          } else {
-            $info = "Error en la inserción de los datos, vuelva a intentarlo.";
-          }
+
         }
       } else {
         $info = "Error en la inserción de los datos, vuelva a intentarlo.";
@@ -174,6 +220,7 @@
   </form>
 
 </nav>
+
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -190,15 +237,6 @@
             <input type="text" class="form-control" name="prod" placeholder="Nombre del producto" required maxlength="150">
           </div>
           <div class="form-group">
-            <label for="precom" class="col-form-label">Precio de compra:</label>
-            <div class="input-group mb-2">
-              <div class="input-group-prepend">
-                <div class="input-group-text">$</div>
-              </div>
-              <input type="number" min="0" step="0.01" class="form-control" name="precom" placeholder="Precio de compra" required>
-            </div>
-          </div>
-          <div class="form-group">
             <label for="preven" class="col-form-label">Precio de venta:</label>
             <div class="input-group mb-2">
               <div class="input-group-prepend">
@@ -212,12 +250,16 @@
             <textarea class="form-control" name="desc" maxlength="200" required></textarea>
           </div>
           <div class="form-group">
-            <label class="col-form-label">Imagen</label>
+            <label class="col-form-label">Imagen principal</label>
             <input type="file" class="form-control-file" name="archivo" id="archivo" accept="image/png, image/jpeg, image/gif, image/webp" required>
           </div>
           <div class="form-group">
+            <label class="col-form-label">Imágenes relacionadas</label>
+            <input type="file" multiple class="form-control-file" name="archivosr[]" id="archivosr" accept="image/png, image/jpeg, image/gif, image/webp" required>
+          </div>
+          <div class="form-group">
             <label for="cat" class="col-form-label">Categoría</label>
-            <select name="cat" class="form-control">
+            <select name="cat" id="cat" class="form-control">
               <option selected disabled>Elegir...</option>
               <?php
                 $cons = "SELECT categoria FROM t_categorias";
@@ -237,20 +279,20 @@
     </div>
   </div>
 </div>
-
 <div class="table-responsive">
   <table class="table">
     <caption>Lista de productos</caption>
     <thead>
       <tr>
         <th scope="col">Nombre</th>
-        <th scope="col">Precio de compra</th>
         <th scope="col">Precio de venta</th>
         <th scope="col">Descripción</th>
-        <th scope="col">Imagen</th>
+        <th scope="col">Imagen </th>
         <th scope="col">Categoría</th>
         <th scope="col">Editar</th>
         <th scope="col">Eliminar</th>
+        <th scope="col">Agregar a almacén</th>
+        <th scope="col">Agregar a compras</th>
       </tr>
     </thead>
     <tbody>
@@ -258,7 +300,7 @@
 
         if($sinres){
           echo '<tr>
-                  <th colspan="8" class="text-center text-danger" >
+                  <th colspan="9" class="text-center text-danger" >
                     No hay resultados
                   </th>
                 </tr>';
@@ -271,14 +313,15 @@
             modalfordelete($row['id_producto'], $pag);
             echo '<tr>
                     <th>'.$row['producto'].'</th>
-                    <td>$'.$row['precom'].'</td>
                     <td>$'.$row['preven'].'</td>
                     <td>'.$row['descripcion']."</td>
-                    <td><img src='".$row['imagen']."' style='height: 50px;'></td>
+                    <td><img src='../../".$row['imagen']."' style='height: 50px;'></td>
                     <td>".$row['categoria'].'</td>
                     <td><button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#updModal'.$row['id_producto'].'" data-whatever="producto">Editar</button></td>';
 
             echo "<td><button type='button' class='btn btn-outline-danger' onclick='openDeleteConfirmation(".$row['id_producto'].");'>Eliminar</button></td>
+                  <td><button type='button' class='btn btn-outline-primary' data-toggle='modal' data-target='#addToStorageModal".$row['id_producto']."' data-whatever='producto'>Agregar al almacén</button></td>
+                  <td><button type='button' class='btn btn-outline-dark' data-toggle='modal' data-target='#addToPurchaseModal".$row['id_producto']."' data-whatever='producto'>Agregar a compras</button></td>
                   </tr>
                 ";
           }
@@ -307,7 +350,13 @@
 <?php
   function modalforupdate($id, $part){
     $conn = connect_db();
-    $updQry = "SELECT * FROM t_producto NATURAL JOIN t_categorias WHERE id_producto = $id";
+    $proveed = "";
+    $obtprov = mysqli_query($conn, "SELECT proveedor FROM t_proveedores");
+    while ($cadarow=mysqli_fetch_assoc($obtprov)) {
+        $proveed = $proveed.'<option>'.$cadarow['proveedor'].'</option>';
+    }
+
+    $updQry = "SELECT * FROM t_productos NATURAL JOIN t_categorias WHERE id_producto = $id";
     $resultupdqry = mysqli_query($conn, $updQry);
     while($row=mysqli_fetch_assoc($resultupdqry)){
       echo '<div class="modal fade" id="updModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="updModalLabel'.$id.'" aria-hidden="true">
@@ -328,15 +377,6 @@
                         <input maxlength="150" value="'.$row['producto'].'"type="text" class="form-control" name="prod" placeholder="Nombre del producto" required>
                       </div>
                       <div class="form-group">
-                        <label for="precom" class="col-form-label">Precio de compra:</label>
-                        <div class="input-group mb-2">
-                          <div class="input-group-prepend">
-                            <div class="input-group-text">$</div>
-                          </div>
-                          <input value="'.$row['precom'].'" type="number" min="0" step="0.01" class="form-control" name="precom" placeholder="Precio de compra" required>
-                        </div>
-                      </div>
-                      <div class="form-group">
                         <label for="preven" class="col-form-label">Precio de venta:</label>
                         <div class="input-group mb-2">
                           <div class="input-group-prepend">
@@ -350,11 +390,12 @@
                         <textarea class="form-control" name="desc" maxlength="200" required>'.$row['descripcion'].'</textarea>
                       </div>
                       <div class="form-group">
-                        <label class="col-form-label">Imagen</label>
+                        <label class="col-form-label">Imagen principal</label>
                         <small class="text-primary">*Si quiere conservar la imagen original, puede omitir este campo</small>
                         <input type="file" class="form-control-file" name="archivo" id="archivoUpd" accept="image/png, image/jpeg, image/gif, image/webp">
-                      </div>
-                      <div class="form-group">
+                      </div>';
+
+                      echo '<div class="form-group">
                         <label for="cat" class="col-form-label">Categoría</label>
                         <select name="cat" class="form-control">
                           <option selected>'.$row['categoria'].'</option>';
@@ -385,6 +426,165 @@
                     modal.find(".modal-title").text("Actualizar " + recipient)
                     });
                 </script>';
+
+          echo '<div class="modal fade" id="addToStorageModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="addToStorageModalLabel">Agregar producto al almacén</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="control.php?content=storage" method="post">
+                          <input type="hidden" name="idpr" value="'.$id.'">
+                          <input type="hidden" name="parteor" value="'.$part.'">
+                          <div class="form-group">
+                            <label for="producto" class="col-form-label">Producto</label>
+                            <input type="text" class="form-control" name="producto" value="'.$row['producto'].'" readonly>
+                          </div>
+                          <div class="form-group">
+                            <label for="entrada" class="col-form-label">Entrada</label>
+                            <input type="number" min="0" step="0.01" class="form-control" name="entrada" placeholder="Entrada" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="salida" class="col-form-label">Salida</label>
+                            <input type="number" min="0" step="0.01" class="form-control" name="salida" placeholder="Salida" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="fecha" class="col-form-label">Fecha</label>
+                            <input type="date" min="0" step="0.01" class="form-control" name="fecha" placeholder="Fecha" required>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary" name="registrarSto" id="registrarSto">Agregar al almacén</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>';
+        echo '<div class="modal fade" id="addToPurchaseModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addToStorageModalLabel">Agregar producto compras</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="control.php?content=purchase" method="post">
+                        <input type="hidden" name="idpr" value="'.$id.'">
+                        <input type="hidden" name="parteor" value="'.$part.'">
+                        <div class="form-group">
+                          <label for="producto" class="col-form-label">Producto</label>
+                          <input type="text" class="form-control" name="producto" value="'.$row['producto'].'" readonly>
+                        </div>
+                        <div class="form-group">
+                          <label for="precompra" class="col-form-label">Precio de compra</label>
+                          <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                              <div class="input-group-text">$</div>
+                            </div>
+                            <input type="number" min="1" step="0.01" class="form-control" name="precompra" placeholder="Precio de compra" required>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="cantidad" class="col-form-label">Cantidad</label>
+                          <input type="number" min="1" step="1" class="form-control" name="cantidad" placeholder="Cantidad" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="prov" class="col-form-label">Proveedor</label>
+                          <select name="prov" id="prov'.$id.'" class="form-control"><option selected disabled>Elegir...</option>'.$proveed.'</select>
+                        </div>
+                        <div class="form-group">
+                          <label for="fecha" class="col-form-label">Fecha</label>
+                          <input type="date" class="form-control" name="fecha" placeholder="Fecha" required>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                          <button type="submit" class="btn btn-primary" name="registrarPur" id="registrarPur'.$id.'" disabled>Agregar a compras</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>';
+        echo "<script>
+              $('#addToStorageModal".$id."').on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget) // Button that triggered the modal
+              var recipient = button.data('whatever') // Extract info from data-* attributes
+              // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+              // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+              var modal = $(this)
+              modal.find('.modal-title').text('Agregar ' + recipient + ' al almacén')
+            });
+            $('#prov".$id."').change(function(){
+              $('#registrarPur".$id."').attr('disabled', false);
+            });
+            </script>";
+            $qryimgrel = "SELECT imagen FROM t_imagenes WHERE id_producto = $id";
+            $resultqryimgrel = mysqli_query($conn, $qryimgrel);
+            $contador = 0;
+            echo '<div class="modal fade" id="updImgModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="updImgModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Cambiar imágenes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="control.php?content=product" method="post" enctype="multipart/form-data">';
+            while($rowimgrel=mysqli_fetch_assoc($resultqryimgrel)){
+              $contador += 1;
+              echo '   <div class="form-group">
+                          <label for="cambiarImg'.$contador.'_'.$id.'" class="col-form-label">Imagen relacionada #'.$contador.'</label>
+                          <input type="file" class="form-control" id="cambiarImg'.$contador.'_'.$id.'" name="cambiarImg'.$contador.'_'.$id.'" accept="image/png, image/jpeg, image/gif, image/webp" required>
+                        </div>';
+                        echo "<script>
+                            $('#cambiarImg".$contador.'_'.$id."').change(function(){
+
+                            var filename = $('#cambiarImg".$contador.'_'.$id."').val();
+
+                            if(filename == null)
+                                 alert('No ha seleccionado una imagen');
+                            else{
+                                 var extension = filename.replace(/^.*\./, '');
+
+                                 if (extension == filename)
+                                     extension = '';
+                                 else{
+                                     extension = extension.toLowerCase();
+
+                                     if(!((extension == 'jpg') || (extension == 'png') ||
+                                        (extension == 'jpeg') || (extension == 'webp'))){
+                                          alert('Solo se aceptan archivos con extensión: jpg, jpeg, png y webp');
+                                          $('#cambiarImg".$contador.'_'.$id."').val('');
+                                    } else{
+                                      $('#actualizarimg".$id."').attr('disabled', false);
+                                    }
+                               }
+                            }
+
+                        });</script>";
+            }
+
+            echo '<div class="modal-footer">
+              <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+              <button type="submit" class="btn btn-primary" name="actualizarimg'.$id.'" id="actualizarimg'.$id.'" disabled>Cambiar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>';
+
+
+
     }
 
 
@@ -418,7 +618,6 @@
 
   if(isset($_POST['actualizar'])){
     $prod = $_POST['prod'];
-    $precom = $_POST['precom'];
     $preven = $_POST['preven'];
     $desc = $_POST['desc'];
     $id = $_POST['idprod'];
@@ -430,7 +629,7 @@
       $cat = $_POST['cat'];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
-      $upd = "UPDATE t_producto SET producto = '$prod', precom = $precom, preven = $preven, descripcion = '$desc', imagen = '$ruta_imagen', id_categoria = $idcat WHERE id_producto = ".$id;
+      $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$ruta_imagen', id_categoria = $idcat WHERE id_producto = ".$id;
       $info = "";
       $rt = "/img".$imagen;
 
@@ -467,7 +666,7 @@
       $cat = $_POST['cat'];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
-      $upd = "UPDATE t_producto SET producto = '$prod', precom = $precom, preven = $preven, descripcion = '$desc', imagen = '$rutaimg', id_categoria = $idcat WHERE id_producto = ".$id;
+      $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$rutaimg', id_categoria = $idcat WHERE id_producto = ".$id;
       $info = "";
 
       if($conn->query($upd) === TRUE){
@@ -500,7 +699,7 @@
 if(isset($_POST['eliminar'])){
   $iddel = $_POST['idprod'];
   $info = "El producto se ha eliminado. La lista de productos se actualizará.";
-  $sql = "DELETE FROM t_producto WHERE id_producto = $iddel";
+  $sql = "DELETE FROM t_productos WHERE id_producto = $iddel";
   if($conn->query($sql) === TRUE){
     echo "<div class='modal' tabindex='-1' role='dialog' id='delModal'>
             <div class='modal-dialog' role='document'>

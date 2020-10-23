@@ -21,6 +21,9 @@
     <a class="nav-link <?php echo $load == 'purchase' ? 'active disabled' : '' ?>" href="?content=purchase">Compras</a>
   </li>
   <li class="nav-item">
+    <a class="nav-link <?php echo $load == 'storage' ? 'active disabled' : '' ?>" href="?content=storage">Almacén</a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link <?php echo $load == 'slider' ? 'active disabled' : '' ?>" href="?content=slider">Slider</a>
   </li>
   <li class="nav-item">

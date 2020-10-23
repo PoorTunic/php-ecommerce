@@ -77,7 +77,7 @@
   if(isset($_POST['registrar'])){
     $cat = $_POST['categoria'];
 
-    $ins = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as contador FROM t_categorias WHERE categoria = '$cat'"))["contador"] == 1? "D" : "INSERT INTO t_categorias VALUES (null, '$cat')";
+    $ins = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as contador FROM t_categorias WHERE categoria = '$cat'"))["contador"] == 1? "D" : "INSERT INTO t_categorias VALUES (null, UPPER('$cat'))";
 
     $info = "";
 
@@ -234,7 +234,7 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    <form action="control.php?content=category" method="post">
+                    <form action="control.php?content=category&part='.$part.'" method="post">
                       <input type="hidden" value="'.$id.'" name="idcategoria">
                       <div class="form-group">
                         <label for="categoria" class="col-form-label">Categoría</label>
@@ -294,7 +294,7 @@
     $cat = $_POST['categoria'];
     $id = $_POST['idcategoria'];
 
-    $upd = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as coin FROM t_categorias WHERE categoria = '$cat'"))["coin"] == 1? "D" : ("UPDATE t_categorias SET categoria = '$cat' WHERE id_categoria = ".$id);
+    $upd = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as coin FROM t_categorias WHERE categoria = '$cat'"))["coin"] == 1? "D" : ("UPDATE t_categorias SET categoria = UPPER('$cat') WHERE id_categoria = ".$id);
     $info = "";
     if($upd == "D"){
         $info = "Ya existe una categoría registrada con ese nombre. No se modificará la categoría.";
@@ -310,7 +310,7 @@
                 <div class='modal-content'>
                   <div class='modal-header'>
                     <h5 class='modal-title'>Cuadro de información</h5>
-                    <button type='button' class='close' data-dismiss='modal' aria-label='Cerrar'  onclick='goToPart(document.getElementById(\"parte\").value);'>
+                    <button type='button' class='close' data-dismiss='modal' aria-label='Cerrar' onclick='goToPart(document.getElementById(\"parte\").value);'>
                       <span aria-hidden='true'>&times;</span>
                     </button>
                   </div>
