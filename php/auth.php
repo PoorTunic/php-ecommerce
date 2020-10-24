@@ -42,7 +42,7 @@ function recognize()
 {
     if (isset($_SESSION['username']) && !empty($_SESSION['username'])) {
         if ($_SESSION["level"] == 1 || $_SESSION["level"] == 2) {
-            header("Location: pages/control.php");
+            header("Location: pages/admin/control.php");
         }
     }
 }

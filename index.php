@@ -28,7 +28,7 @@ recognize();
 
         $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 
-        $query = "SELECT id_producto, producto, preven, descripcion, imagen, id_categoria, categoria FROM t_producto NATURAL JOIN t_categoria";
+        $query = "SELECT id_producto, producto, preven, descripcion, imagen, id_categoria, categoria FROM t_productos NATURAL JOIN t_categorias";
 
         $Paginator = new Paginator($conn, $query);
 
