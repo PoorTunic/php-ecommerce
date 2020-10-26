@@ -21,11 +21,11 @@ if (isset($_POST["submit"])) {
             if ($result["nevel"] == 1 || $result["nevel"] == 2) {
                 if ($result["nevel"] == 1) {
                     $_SESSION["role"] = "admin";
-                } else if ($result["nivel"] == 2) {
+                } else if ($result["nevel"] == 2) {
                     $_SESSION["role"] = "manager";
                 }
                 header("Location: ../pages/admin/control.php");
-            } else if ($result["nivel"] == 3) {
+            } else if ($result["nevel"] == 3) {
                 header("Location: ../index.php");
             }
         } else {
