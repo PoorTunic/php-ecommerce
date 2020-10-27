@@ -342,15 +342,7 @@
         <th scope="col">Contacto</th>
         <th scope="col">Teléfono 1</th>
         <th scope="col">Correo 1</th>
-        <th scope="col">Teléfono 2</th>
-        <th scope="col">Correo 2</th>
-        <th scope="col">Estado</th>
-        <th scope="col">Municipio</th>
-        <th scope="col">Colonia</th>
-        <th scope="col">Código Postal</th>
-        <th scope="col">Calle</th>
-        <th scope="col">No. Int</th>
-        <th scope="col">No. Ext</th>
+        <th scope="col">Detalles</th>
         <th scope="col">Editar</th>
         <th scope="col">Eliminar</th>
       </tr>
@@ -375,15 +367,7 @@
                     <td>'.$row['contacto'].'</td>
                     <td>'.$row['telefono1'].'</td>
                     <td>'.$row['correo1'].'</td>
-                    <td>'.$row['telefono2'].'</td>
-                    <td>'.$row['correo2'].'</td>
-                    <td>'.$row['estado'].'</td>
-                    <td>'.$row['municipio'].'</td>
-                    <td>'.$row['colonia'].'</td>
-                    <td>'.$row['codpos'].'</td>
-                    <td>'.$row['calle'].'</td>
-                    <td>'.$row['noext'].'</td>
-                    <td>'.$row['noint'].'</td>
+                    <td><button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#infoModal'.$row['id_proveedor'].'" data-whatever="proveedor">Detalles</button></td>
                     <td><button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#updModal'.$row['id_proveedor'].'" data-whatever="proveedor">Editar</button></td>';
             echo "<td><button type='button' class='btn btn-outline-danger' onclick='openDeleteConfirmation(".$row['id_proveedor'].");'>Eliminar</button></td>
                   </tr>
@@ -519,6 +503,77 @@
               modal.find(".modal-title").text("Actualizar " + recipient)
               });
            </script>';
+
+           echo '<div class="modal fade" id="infoModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel'.$id.'" aria-hidden="true">
+                   <div class="modal-dialog" role="document">
+                     <div class="modal-content">
+                       <div class="modal-header">
+                         <h5 class="modal-title" id="infoModalLabel'.$id.'">Ver detalles de proveedor</h5>
+                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                         </button>
+                       </div>
+                       <div class="modal-body">
+                         <form action="control.php?content=provider&part='.$part.'" method="post">
+                           <div class="form-group">
+                             <label for="telefono2" class="col-form-label">Teléfono 2</label>
+                             <div class="input-group mb-2">
+                               <div class="input-group-prepend">
+                                 <div class="input-group-text">#</div>
+                               </div>
+                               <input value="'.$row["telefono2"].'" type="tel" class="form-control" name="telefono2" placeholder="Teléfono de contacto 2" required maxlength="20" minlength="10" readonly disabled>
+                             </div>
+                           </div>
+                           <div class="form-group">
+                             <label for="correo2" class="col-form-label">Correo 2</label>
+                             <input value="'.$row["correo2"].'" type="email" class="form-control" name="correo2" placeholder="Correo de contacto 2" required maxlength="60" readonly disabled>
+                           </div>
+                           <div class="form-group">
+                            <label for="estado" class="col-form-label">Estado</label>
+                            <input value="'.$row["estado"].'" type="text" class="form-control" name="estado" placeholder="Estado" required maxlength="60" readonly disabled>';
+
+                   echo '</div>
+                           <div class="form-group">
+                             <label for="municipio" class="col-form-label">Municipio</label>
+                             <input value="'.$row["municipio"].'" type="text" class="form-control" name="municipio" placeholder="Municipio" required maxlength="60" readonly disabled>
+                           </div>
+                           <div class="form-group">
+                             <label for="colonia" class="col-form-label">Colonia</label>
+                             <input value="'.$row["colonia"].'" type="text" class="form-control" name="colonia" placeholder="Colonia" required maxlength="60" readonly disabled>
+                           </div>
+                           <div class="form-group">
+                             <label for="cp" class="col-form-label">Código Postal</label>
+                             <input value="'.$row["codpos"].'" type="number" step="1" class="form-control" name="cp" placeholder="Código Postal" required minlength="5" maxlength="5" readonly disabled>
+                           </div>
+                           <div class="form-group">
+                             <label for="calle" class="col-form-label">Calle</label>
+                             <input value="'.$row["calle"].'" type="text" class="form-control" name="calle" placeholder="Calle" required maxlength="40" readonly disabled>
+                           </div>
+                           <div class="form-group">
+                             <label for="noext" class="col-form-label">No. Ext</label>
+                             <input value="'.$row["noext"].'" type="number" step="1" class="form-control" name="noext" placeholder="Número exterior" required maxlength="5" readonly disabled>
+                           </div>
+                           <div class="form-group">
+                             <label for="noint" class="col-form-label">No. Int</label>
+                             <input value="'.$row["noint"].'" type="number" step="1" class="form-control" name="noint" placeholder="Número interior" required maxlength="5" readonly disabled>
+                           </div>
+                           <div class="modal-footer">
+                             <button type="reset" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                           </div>
+                         </form>
+                       </div>
+                     </div>
+                   </div>
+                 </div>';
+           echo '<script>
+                   $("#infoModal'.$id.'").on("show.bs.modal", function (event) {
+                   var button = $(event.relatedTarget) // Button that triggered the modal
+                   var recipient = button.data("whatever")
+
+                   var modal = $(this)
+                   modal.find(".modal-title").text("Ver detalles de " + recipient)
+                   });
+                </script>';
 
     }
 
