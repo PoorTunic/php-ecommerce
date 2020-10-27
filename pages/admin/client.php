@@ -203,7 +203,7 @@
                               <p>$info</p>
                             </div>
                             <div class='modal-footer'>
-                              <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart($np + 1)'>Ver producto agregado</button>
+                              <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart($np + 1)'>Ver cliente agregado</button>
                             </div>
                           </div>
                         </div>

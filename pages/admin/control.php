@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +17,13 @@ session_start();
     <script src="../../js/bootstrap.min.js"></script>
     <script src="../../js/popper.min.js"></script>
 </head>
-<?php $load = isset($_REQUEST['content']) ? strtolower($_REQUEST['content']) : 'initial-page'?>
+<?php
+  $load = isset($_REQUEST['content']) ? strtolower($_REQUEST['content']) : 'initial-page';
+
+  if (!ini_set('default_charset', 'utf-8')) {
+    echo "could not set default_charset to utf-8<br>";
+  }
+?>
 <body>
     <div class="container">
         <nav class="navbar navbar-light bg-light">
