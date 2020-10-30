@@ -4,62 +4,61 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-4 col-md-2">
-                <ul class="list-unstyled list-group">
-                    <li style="color: white; font-size: 16px;">OFFICE</li>
-                    <br>
-                    <li><a href="#" class="text-light">COMPUTERS</a></li>
-                    <li><a href="#" class="text-light">LAPTOPS</a></li>
-                    <li><a href="#" class="text-light">PRINTERS</a></li>
-                    <li><a href="#" class="text-light">NETWORK</a></li>
+                <ul class="list-unstyled">
+                    <li style="color: white; font-family: 'Bahnschrift Condensed';font-size: 16px; font-weight: bold;">OFICINA</li>
 
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">COMPUTADORAS</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">LAPTOPS</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">IMPRESORAS</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">REDES</a></li>
                 </ul>
             </div>
             <div class="col-xs-4 col-md-2">
                 <ul class="list-unstyled">
-                    <li style="color: white; font-size: 16px;">HOME</li>
-                    <br>
-                    <li><a href="#" class="text-light">CINEMA</a></li>
-                    <li><a href="#" class="text-light">TELEVISION</a></li>
-                    <li><a href="#" class="text-light">LAUNDRY</a></li>
-                    <li><a href="#" class="text-light">OTHER</a></li>
+                    <li style="color: white; font-family: 'Bahnschrift Condensed';font-size: 16px; font-weight: bold;">HOGAR</li>
+
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">CINE</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">TV</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">LAVADORAS</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">OTROS</a></li>
                 </ul>
             </div>
             <div class="col-xs-4 col-md-2">
                 <ul class="list-unstyled">
-                    <li style="color: white; font-size: 16px;">PHONES & MORE</li>
-                    <br>
-                    <li><a href="#" class="text-light">SMARTPHONES</a></li>
-                    <li><a href="#" class="text-light">CLASSICS</a></li>
-                    <li><a href="#" class="text-light">NAVIGATIONS</a></li>
-                    <li><a href="#" class="text-light">OFFICE PHONES</a></li>
+                    <li style="color: white; font-family: 'Bahnschrift Condensed';font-size: 16px; font-weight: bold;">CELULARES Y MÁS</li>
+
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">SMARTPHONES</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">CLÁSICOS</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">GPS</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">TELÉFONOS DE OFICINA</a></li>
                 </ul>
             </div>
             <div class="col-xs-4 col-md-2">
                 <ul class="list-unstyled">
-                    <li style="color: white; font-size: 16px;">GAMING</li>
-                    <br>
-                    <li><a href="#" class="text-light">PLAYSTATION</a></li>
-                    <li><a href="#" class="text-light">NINTENDO</a></li>
-                    <li><a href="#" class="text-light">XBOX</a></li>
-                    <li><a href="#" class="text-light">CONSOLES</a></li>
+                    <li style="color: white; font-family: 'Bahnschrift Condensed';font-size: 16px; font-weight: bold;">GAMING</li>
+
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">PLAYSTATION</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">NINTENDO</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">XBOX</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">CONSOLAS</a></li>
                 </ul>
             </div>
             <div class="col-xs-4 col-md-2">
                 <ul class="list-unstyled">
-                    <li style="color: white; font-size: 16px;">BESTSELLERS</li>
-                    <br>
-                    <li><a href="#" class="text-light">IPAD 2</a></li>
-                    <li><a href="#" class="text-light">LENOVO Y500</a></li>
-                    <li><a href="#" class="text-light">HTC ONE</a></li>
-                    <li><a href="#" class="text-light">IMAC RETINA</a></li>
+                    <li style="color: white; font-family: 'Bahnschrift Condensed';font-size: 16px; font-weight: bold;">BESTSELLERS</li>
+
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">IPAD 2</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">LENOVO Y500</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">HTC ONE</a></li>
+                    <li><a href="#" class="text-light" style="font-size: 12px; font-family: 'Bahnschrift Condensed'">IMAC RETINA</a></li>
                 </ul>
             </div>
             <div class="col-xs-4 col-md-2">
                 <ul class="list-unstyled">
-                    <li style="color: white; font-size: 16px;">SOCIAL</li>
-                    <br>
+                    <li style="color: white; font-family: 'Bahnschrift Condensed';font-size: 16px; font-weight: bold;">SOCIAL</li>
+
                     <li>
-                        <p style="color: white;">Follow us on:</p>
+                        <p style="color: white;font-size: 12px; font-family: 'Bahnschrift Condensed'">Síguenos en:</p>
                         <ul class="list-inline">
                             <?php
                             for ($i = 0; $i < 9; $i++) {
@@ -82,7 +81,7 @@
         <div class="dropdown-divider"></div>
         <div class="row">
             <div class="col-xs-12 col-md-6">
-                <p style="color: white;">&copy;Copyright 2020|Aurum Theme by Laborator</p>
+                <p style="color: white;font-family: 'Bahnschrift Condensed';font-size: 18px;"> Tema original por Laborator | Proyecto de Desarrollo de Aplicaciones Web</p>
             </div>
             <div class="col-xs-12 col-md-6">
                 <ul class="list-inline text-right">

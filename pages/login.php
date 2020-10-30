@@ -9,6 +9,7 @@
     <title>Ingresar</title>
 
     <link rel="stylesheet" href="../css/bootstrap.min.css" >
+    <link rel="stylesheet" href="../css/style.css">
 
     <script src="../js/jquery-3.3.1.slim.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
@@ -33,12 +34,12 @@
                 <input required type="password" class="form-control" name="password" placeholder="Ingresa tu contraseña">
             </div>
             <div class="form-group row my-auto d-flex justify-content-between">
-                <div class="col-4">
-                    Espacio para captcha
+                <div class="col-4 d-flex align-items-center">
+                    <img class="w-100 h-50" src="../php/captcha.php">
                 </div>
                 <div class="col-8">
                     <label for="captcha" style="color: white">Captcha</label>
-                    <input required type="text" class="form-control" name="captcha" placeholder="Ingresa el código captcha">
+							      <input type="text" class="form-control " aria-describedby="code" placeholder="Ingresa el captcha" name="code" required>
                 </div>
             </div>
             <br>

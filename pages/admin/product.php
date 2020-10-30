@@ -667,7 +667,7 @@
       $cat = $_POST['cat'];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
-      $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$rutaimg', id_categoria = $idcat WHERE id_producto = ".$id;
+      $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$rutalt', id_categoria = $idcat WHERE id_producto = ".$id;
       $info = "";
 
       if($conn->query($upd) === TRUE){
