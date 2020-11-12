@@ -42,7 +42,7 @@
         var filename = $("#archivo").val() != ''? $("#archivo").val() : $("#archivoUpd").val();
 
         if(filename == null)
-             alert('No ha seleccionado una imagen');
+             alert('No ha seleccionado una imagen. Se pondrá una por defecto');
         else{
              var extension = filename.replace(/^.*\./, '');
 
@@ -139,8 +139,9 @@
     $preven = $_POST['preven'];
     $desc = $_POST['desc'];
 
-    if(isset($_FILES['archivo']['tmp_name']) && $_FILES['archivo']['tmp_name'] != ""){
+
       $imagen = $_FILES['archivo']['name'];
+      echo "<script>alert('$imagen')</script>";
       $ruta_imagen = '../../img/';
       $cat = $_POST['cat'];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
@@ -152,38 +153,49 @@
 
       if($conn->query($ins) === TRUE){
         if($rowsql=mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_producto as id, imagen FROM t_productos ORDER by id_producto DESC LIMIT 1"))){
+            $rutaind = "";
+            $rutaalt = "";
+            $filename = "";
+            if($_FILES["archivosr"]['name'][0] != "" && $_FILES["archivosr"]['name'][0] != null){
 
-            foreach($_FILES["archivosr"]['tmp_name'] as $key => $tmp_name){
+              foreach($_FILES["archivosr"]['tmp_name'] as $key => $tmp_name){
 
-          		if($_FILES["archivosr"]["name"][$key]) {
-          			$filename = $_FILES["archivosr"]["name"][$key]; //Obtenemos el nombre original del archivo
-          			$source = $_FILES["archivosr"]["tmp_name"][$key]; //Obtenemos un nombre temporal del archivo
-                $id = $rowsql['id'];
-          			$directorio = $rowsql["imagen"]; //Declaramos un  variable con la ruta donde guardaremos los archivos
+            		if($_FILES["archivosr"]["name"][$key]) {
+            			$filename = $_FILES["archivosr"]["name"][$key]; //Obtenemos el nombre original del archivo
+            			$source = $_FILES["archivosr"]["tmp_name"][$key]; //Obtenemos un nombre temporal del archivo
+                  $id = $rowsql['id'];
+            			$directorio = $rowsql["imagen"]; //Declaramos un  variable con la ruta donde guardaremos los archivos
 
-          			$dir=opendir($directorio); //Abrimos el directorio de destino
-          			$target_path = '../../img/'.$id.'_'.$filename; //Indicamos la ruta de destino, así como el nombre del archivo
+            			$dir=opendir($directorio); //Abrimos el directorio de destino
+            			$target_path = '../../img/'.$id.'_'.$filename; //Indicamos la ruta de destino, así como el nombre del archivo
 
-                if(copy($source, $target_path)){
-                  $ruta = 'img/'.$id.'_'.$filename;
-                  $idprod = $rowsql["id"];
-                  $insimgslider = "INSERT INTO t_imagenes VALUES (null, '$ruta', $idprod, 1, 1)";
-                  $conn->query($insimgslider);
-                }
+                  if(copy($source, $target_path)){
+                    $ruta = 'img/'.$id.'_'.$filename;
+                    $idprod = $rowsql["id"];
+                    $insimgslider = "INSERT INTO t_imagenes VALUES (null, '$ruta', $idprod, 1, 1)";
+                    $conn->query($insimgslider);
+                  }
 
-          			closedir($dir); //Cerramos el directorio de destino
-          		}
-          	}
-
-            $rutaact = 'img/'.$rowsql["id"].'_main_'.$filename;
-            $rutaind = $ruta_imagen.$rowsql["id"].'_m_'.$imagen;
-            $rutalt = 'img/'.$rowsql["id"].'_m_'.$imagen;
-            if($conn->query("UPDATE t_productos SET imagen = '$rutalt' WHERE id_producto = ".$rowsql["id"])){
-              if(copy($_FILES["archivo"]["tmp_name"], $rutaind)){
-                $info = "Producto agregado. Se actualizará la lista de productos.";
-              }
+            			closedir($dir); //Cerramos el directorio de destino
+            		}
+            	}
             }
 
+            if($imagen != ""){
+              $rutalt = 'img/'.$rowsql["id"].'_m_'.$imagen;
+              $rutaind = $ruta_imagen.$rowsql["id"].'_m_'.$imagen;
+
+              if($conn->query("UPDATE t_productos SET imagen = '$rutalt' WHERE id_producto = ".$rowsql["id"])){
+                if(copy($_FILES["archivo"]["tmp_name"], $rutaind)){
+                  $info = "Producto agregado. Se actualizará la lista de productos.";
+                }
+              }
+            } else {
+              $rutalt = 'img/default.jpg';
+              if($conn->query("UPDATE t_productos SET imagen = '$rutalt' WHERE id_producto = ".$rowsql["id"])){
+                  $info = "Producto agregado. Se actualizará la lista de productos.";
+              }
+            }
         }
       } else {
         $info = "Error en la inserción de los datos, vuelva a intentarlo.";
@@ -207,7 +219,7 @@
               </div>
             </div>";
         echo "<script>$('#myModal').modal('show');</script>";
-    }
+
 
   }
 ?>
@@ -251,11 +263,11 @@
           </div>
           <div class="form-group">
             <label class="col-form-label">Imagen principal</label>
-            <input type="file" class="form-control-file" name="archivo" id="archivo" accept="image/png, image/jpeg, image/gif, image/webp" required>
+            <input type="file" class="form-control-file" name="archivo" id="archivo" accept="image/png, image/jpeg, image/gif, image/webp">
           </div>
           <div class="form-group">
             <label class="col-form-label">Imágenes relacionadas</label>
-            <input type="file" multiple class="form-control-file" name="archivosr[]" id="archivosr" accept="image/png, image/jpeg, image/gif, image/webp" required>
+            <input type="file" multiple class="form-control-file" name="archivosr[]" id="archivosr" accept="image/png, image/jpeg, image/gif, image/webp">
           </div>
           <div class="form-group">
             <label for="cat" class="col-form-label">Categoría</label>

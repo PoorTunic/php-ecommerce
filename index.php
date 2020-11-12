@@ -10,27 +10,118 @@ recognize();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio</title>
-    <link rel="stylesheet" href="css/style.css">
 
     <?php require "php/cdn.php" ?>
 </head>
 
 <body class="container">
     <?php require "php/header.php" ?>
+    <?php
+    require "php/database.php";
+
+    $conn = connect_db();
+    ?>
 
     <br>
     <h2>Bienvenido a nuestra tienda</h2>
     <br>
+    <?php
+    if(isset($_POST['buscar'])){
+      $dato = $_POST['dato'];
+    ?>
+    <div class="card-group">
+    <?php
+        $busq = mysqli_query($conn, "SELECT id_producto, producto, preven, descripcion, imagen, categoria FROM t_productos NATURAL JOIN t_categorias WHERE producto LIKE '%".$dato."%'");
+        while($row = mysqli_fetch_assoc($busq)){
+    ?>
+        <div class="col-sm-3">
+          <div class="card">
+              <img class="card-img-top" src="<?= $row['imagen'] ?>" alt="Card image cap" style="max-height: 200px;">
+              <div class="card-body">
+                  <h3 class="card-title no-right-margin" style="font-size: 20px;"><a class="text-dark" href="./pages/product.php?id=<?= $row['id_producto']?>"><?php echo $row['producto'] ?></a></h3>
+                  <p class="card-text text-muted" style="font-size: 13px;"><?= $row['categoria'] ?></p>
+                  <p style="color: #FF9600; font-size: 18px; font-style: italic; font-weight: bold;" class="card-text">$<?php echo $row['preven']; ?></p>
+              </div>
+          </div>
+        </div>
+    <?php
+          }
+    ?>
+    </div>
+
+    <?php
+    } else {
+    ?>
+    <br>
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+      <div class="container">
+        <ol class="carousel-indicators">
+          <?php
+            $conn = connect_db();
+            $counter = 0;
+            $indicators = mysqli_query($conn, "SELECT id_producto, imagen FROM t_imagenes WHERE status = 1 and tipo = 2 ORDER by imagen DESC ");
+            while($row = mysqli_fetch_assoc($indicators)){
+              if($counter == 0){
+          ?>
+            <li data-target="#carouselExampleIndicators" data-slide-to="<?=$counter?>" class="active"></li>
+          <?php
+              } else {
+          ?>
+            <li data-target="#carouselExampleIndicators" data-slide-to="<?=$counter?>"></li>
+          <?php
+              }
+              $counter += 1;
+            }
+          ?>
+        </ol>
+
+        <div class="carousel-inner">
+          <?php
+            $conn = connect_db();
+            $counter = 0;
+            $images = mysqli_query($conn, "SELECT id_producto, imagen FROM t_imagenes WHERE status = 1 and tipo = 2 ORDER by imagen DESC ");
+            while($row = mysqli_fetch_assoc($images)){
+              if($counter == 0){
+          ?>
+          <div class="carousel-item active">
+            <img class="d-block w-100" src="<?= $row['imagen']?>" style="max-height: 800px;" onclick="location.href='pages/product.php?id=<?= $row['id_producto']?>'">
+          </div>
+          <?php
+              } else {
+          ?>
+          <div class="carousel-item">
+            <img class="d-block w-100" src="<?= $row['imagen']?>" style="max-height: 800px;" onclick="location.href='pages/product.php?id=<?= $row['id_producto']?>'">
+          </div>
+          <?php
+              }
+              $counter += 1;
+            }
+          ?>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>
+
     <div class="card-deck">
         <?php
         require_once "php/pagination.php";
-        require "php/database.php";
 
-        $conn = connect_db();
 
         $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $categoria = "";
 
-        $query = "SELECT id_producto, producto, preven, descripcion, imagen, id_categoria, categoria FROM t_productos NATURAL JOIN t_categorias";
+        if(isset($_GET['categoria']))
+          $categoria = " WHERE categoria = '".$_GET['categoria']."'";
+
+
+        $query = "SELECT id_producto, producto, preven, descripcion, imagen, id_categoria, categoria FROM t_productos NATURAL JOIN t_categorias".$categoria;
 
         $Paginator = new Paginator($conn, $query);
 
@@ -75,34 +166,72 @@ recognize();
     ?>
     </div>
     <br>
-    <h3>Impresoras</h3>
+    <h3>Categorías</h3>
     <br>
-    <div class="card-group">
-      <div class="card bg-warning col-xs-4 col-md-4">
-          <div class="card-body">
-              <h3 class="card-title no-right-margin"><a class="text-dark">¿Buscas impresora?</a></h3>
-              <br>
-              <p class="card-text text-dark text-justify" style="font-size: 24px;">Encuenta la impresora que quieres al mejor precio, sólo en TechStore.</p>
-          </div>
+    <div class="row">
+      <div class="col">
+        <div class="list-group">
+          <button type="button" class="list-group-item list-group-item-action <?= ($_GET['categoria'] == "ALL" || $_GET['categoria'] == "")? "active" : "" ?>" onclick="location.href = 'index.php'">VER TODO</button>
+          <?php
+            $conn = connect_db();
+            $items = mysqli_query($conn, "SELECT * FROM t_categorias");
+            while($resultset = mysqli_fetch_assoc($items)){
+          ?>
+          <button type="button" class="list-group-item list-group-item-action <?= $resultset['categoria'] == $_GET['categoria']? "active" : "" ?>" onclick="location.href = '?categoria=<?= $resultset['categoria']?>'"><?= $resultset['categoria']?></button>
+          <?php
+            }
+          ?>
+        </div>
       </div>
-    <?php
-      $conn = connect_db();
-      $impr = mysqli_query($conn, "SELECT id_producto, producto, preven, descripcion, imagen, categoria FROM t_productos NATURAL JOIN t_categorias WHERE categoria = 'Impresoras'");
-      while($row = mysqli_fetch_assoc($impr)){
-    ?>
-      <div class="card col-xs-4 col-md-4">
-          <img class="card-img-top" src="<?= $row['imagen'] ?>" alt="Card image cap" style="max-height: 200px;">
-          <div class="card-body">
-              <h3 class="card-title no-right-margin" style="font-size: 20px;"><a class="text-dark" href="./pages/product.php?id=<?= $row['id_producto']?>"><?php echo $row['producto'] ?></a></h3>
-              <p class="card-text text-muted" style="font-size: 13px;"><?= $row['categoria'] ?></p>
-              <p style="color: #FF9600; font-size: 18px; font-style: italic; font-weight: bold;" class="card-text">$<?php echo $row['preven']; ?></p>
-          </div>
-      </div>
-  <?php } ?>
+      <div class="card-group col-9">
+      <?php
+        $conn = connect_db();
+        $catcoin = 0;
+        $coinc = mysqli_query($conn, "SELECT count(*) as coin, categoria FROM t_productos NATURAL JOIN t_categorias".(isset($_GET['categoria'])? (" WHERE categoria = '".$_GET['categoria']."'") : ""));
+        while($rcoin = mysqli_fetch_assoc($coinc)){
+          $catcoin = $rcoin['coin'];
+        }
 
+        if($catcoin == 0){
+    ?>
+      <div class="col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <p style="color: #FF9600; font-size: 18px; font-style: italic; font-weight: bold;" class="card-text">No hay resultados de esta categoría</p>
+            </div>
+        </div>
+      </div>
+
+
+    <?php
+        } else {
+    ?>
+
+    <?php
+        $impr = mysqli_query($conn, "SELECT id_producto, producto, preven, descripcion, imagen, categoria FROM t_productos NATURAL JOIN t_categorias".(isset($_GET['categoria'])? (" WHERE categoria = '".$_GET['categoria']."'") : ""));
+        while($row = mysqli_fetch_assoc($impr)){
+    ?>
+        <div class="col-sm-3">
+          <div class="card">
+              <img class="card-img-top" src="<?= $row['imagen'] ?>" alt="Card image cap" style="max-height: 200px;">
+              <div class="card-body">
+                  <h3 class="card-title no-right-margin" style="font-size: 20px;"><a class="text-dark" href="./pages/product.php?id=<?= $row['id_producto']?>"><?php echo $row['producto'] ?></a></h3>
+                  <p class="card-text text-muted" style="font-size: 13px;"><?= $row['categoria'] ?></p>
+                  <p style="color: #FF9600; font-size: 18px; font-style: italic; font-weight: bold;" class="card-text">$<?php echo $row['preven']; ?></p>
+              </div>
+          </div>
+        </div>
+
+    <?php
+          }
+        }
+    ?>
+    </div>
   </div>
-  <br>
-  <br>
+
+    <?php } ?>
+    <br>
+    <br>
     <?php require "php/footer.php" ?>
 
 </body>

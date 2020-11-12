@@ -16,7 +16,7 @@
     <script src="../js/popper.min.js"></script>
 </head>
 
-<body>
+<body class="container">
     <?php require "../php/header.php" ?>
 
     <div style="padding-top: 3%">

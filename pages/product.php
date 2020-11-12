@@ -26,7 +26,7 @@ session_start();
     document.getElementById("productImage").setAttribute("src", relat);
     }
 </script>
-<body>
+<body class="container">
     <?php require "./../php/header.php" ?>
 
     <?php

@@ -4,21 +4,11 @@ body {
 
 .header-custom {
     background-color: #154a87;
-    box-shadow: none !important;
-    background: #154a87 url(https://themes.laborator.co/aurum/tech/wp-content/uploads/2014/11/map.png) no-repeat 5% 50% !important;
+    /*box-shadow: none !important;*/
+    
 }
 
-.navbar-collapse {
-    float: left;
-    width: 100%;
-    clear: both;
-}
 
-@media (min-width: 768px) {
-    .navbar-right {
-        margin-top: -50px;
-    }
-}
 
 .btn-primary {
     color: white;

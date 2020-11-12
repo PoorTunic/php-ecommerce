@@ -17,8 +17,8 @@
         return;
     }
 </script>
-<header class="header-custom">
-    <nav class="navbar navbar-expand-md flex-row container">
+<header style="background: #154a87 url(https://themes.laborator.co/aurum/tech/wp-content/uploads/2014/11/map.png) no-repeat 5% 50% !important;">
+    <nav class="navbar flex-row container" >
         <a class="navbar-brand mr-auto" onclick="go('/')">
             <img src="https://themes.laborator.co/aurum/tech/wp-content/uploads/2016/04/techstore.png" class="img-fluid" alt="not found">
         </a>
@@ -28,47 +28,44 @@
             </svg>
         </button>
     </nav>
-    <nav class="navbar p-0 navbar-expand-md container">
-        <div class="collapse navbar-collapse px-3" id="navbarContent">
-            <ul class="navbar-nav mx-0 w-50 align-items-start nav-fill">
-                <li class="nav-item">
-                    <a class="nav-link btn-outline-warning text-white" onclick="go('/');"> <em><u>INICIO</u></em></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn-outline-warning text-white" onclick="go('/product');"><em>PRODUCTOS</em></a>
-                </li>
-                <?php
-                if (isset($_SESSION["username"])) {
+    <nav class="navbar navbar-expand-lg navbar-light text-white">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
 
-                  if($_SESSION["username"] != "guest"){
-                ?>
+          <a class="nav-item nav-link btn-outline-warning text-white" onclick="go('/');"> <em><u>INICIO</u></em></a>
+          <a class="nav-item nav-link btn-outline-warning text-white" onclick="go('/product');"><em>PRODUCTOS</em></a>
 
-                    <li class="nav-item">
-                        <a class="nav-link btn-outline-warning text-white" onclick="go('/cart');"><em>CARRITO</em></a>
-                    </li>
-                    <li class="nav-item">
-                        <form action="php/logout.php" method="GET">
-                            <button class="nav-link btn-outline-warning text-white" name="exit" value="logout" type="submit">SALIR</a>
-                        </form>
-                    </li>
-                <?php
-              } else { ?>
-                <li class="nav-item">
-                    <a class="nav-link btn-outline-warning text-white" onclick="go('/login');"><em>INGRESAR</em></a>
-                </li>
-                <?php
-                }
-              } else {
-                $_SESSION["username"] = "guest";
-                ?>
+          <?php
+          if (isset($_SESSION["username"])) {
 
-                    <li class="nav-item">
-                        <a class="nav-link btn-outline-warning text-white" onclick="go('/login');"><em>INGRESAR</em></a>
-                    </li>
-                <?php
-                }
-                ?>
-            </ul>
+            if($_SESSION["username"] != "guest"){
+          ?>
+          <a class="nav-item nav-link btn-outline-warning text-white" onclick="go('/cart');"><em>CARRITO</em></a>
+          <form action="php/logout.php" method="GET">
+              <button class="nav-item nav-link btn-outline-warning text-white" name="exit" value="logout" type="submit">SALIR</a>
+          </form>
+
+          <?php
+          } else { ?>
+            <a class="nav-item nav-link btn-outline-warning text-white" onclick="go('/login');"><em>INGRESAR</em></a>
+          <?php
+            }
+          } else {
+          $_SESSION["username"] = "guest";
+          ?>
+            <a class="nav-item nav-link btn-outline-warning text-white" onclick="go('/login');"><em>INGRESAR</em></a>
+          <?php
+          }
+          ?>
+
         </div>
+        <form class="form-inline" action="index.php" method="post">
+          <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" id="dato" name="dato" required>
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buscar" name="buscar">Buscar</button>
+        </form>
+      </div>
     </nav>
 </header>
