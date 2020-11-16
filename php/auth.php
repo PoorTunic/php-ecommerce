@@ -15,6 +15,7 @@ if (isset($_POST["submit"])) {
           $result = login($conn, $username, $password);
           if (is_array($result)) {
               $_SESSION["username"] = $username;
+              $_SESSION["iduser"] = $result['id_usuario'];
               $_SESSION["logged"] = true;
 
               $_SESSION["level"] = $result["nevel"];

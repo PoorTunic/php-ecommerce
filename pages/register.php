@@ -128,13 +128,37 @@ include_once "../php/database.php";
               if($qty >= 1){
                 echo '<script>alert("Ya existe un usuario registrado con estas características");location.href = "register.php";</script>';
               } else {
-                if($conn->query("INSERT INTO t_usuarios VALUES (null, '$correo', '$password', 3, 1)") === TRUE){
+                if($conn->query("INSERT INTO t_usuarios VALUES (null, '$correo', '$password', 3, 0)") === TRUE){
                   $result = login($conn, $correo, $password);
                   if (is_array($result)) {
                       $_SESSION["username"] = $correo;
+                      $_SESSION["iduser"] = $result["id_usuario"];
                       $_SESSION["logged"] = true;
                       $_SESSION["level"] = $result["nevel"];
-                        echo '<script>alert("Se ha creado su cuenta");location.href = "../index.php";</script>';
+                        echo "  <div class='modal' tabindex='-1' role='dialog' id='myModal'>
+                            <div class='modal-dialog' role='document'>
+                              <div class='modal-content'>
+                                <div class='modal-header'>
+                                  <h5 class='modal-title'>Cuadro de información</h5>
+                                  <button type='button' class='close' data-dismiss='modal' aria-label='Cerrar' onclick="location.href = 'login.php'">
+                                    <span aria-hidden='true'>&times;</span>
+                                  </button>
+                                </div>
+                                <div class='modal-body'>
+                                  <p>
+                                    Su cuenta ha sido creada. Por favor proporcione sus datos de contacto y de envío de sus productos.
+                                  </p>
+                                </div>
+                                <div class='modal-footer'>
+                                  <form action='delivery.php' method='post'>
+                                  <input type='hidden' name='correo' value='$correo'>
+                                  <button type='submit' name='entrega' class='btn btn-primary' data-dismiss='modal'>Ir</button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <script>$('#myModal').modal('show');</script>";
                   } else {
                     echo '<script>location.href = "register.php?err=Usuario/Contraseña incorrectos";</script>';
                   }
