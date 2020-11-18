@@ -41,10 +41,7 @@
             if($_SESSION["username"] != "guest"){
           ?>
 
-          <form action="php/logout.php" method="GET">
-              <a class="nav-item nav-link btn-outline-warning text-white" name="exit" value="logout" type="submit">SALIR</a>
-          </form>
-
+          <a class="nav-item nav-link btn-outline-warning text-white" href="php/logout.php?exit=true">SALIR</a>
           <?php
           } else { ?>
             <a class="nav-item nav-link btn-outline-warning text-white" onclick="go('/login');"><em>INGRESAR</em></a>
@@ -59,7 +56,7 @@
           ?>
 
         </div>
-        <form class="form-inline" action="index.php" method="post">
+        <form class="form-inline" action="../index.php" method="post">
           <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" id="dato" name="dato" required>
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buscar" name="buscar">Buscar</button>
         </form>

@@ -8,7 +8,7 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <link rel="icon" href="../../favicon.ico">
     <title>Administración del sitio - TechStore</title>
 
     <link rel="stylesheet" href="../../css/bootstrap.min.css" >
@@ -25,6 +25,10 @@ session_start();
   }
 ?>
 <body>
+    <?php
+    if($_SESSION['username'] == 'guest')
+      echo "<script>location.href = '../login.php'</script>";
+    ?>
     <div class="container">
         <nav class="navbar navbar-light bg-light">
           <a class="navbar-brand">Bienvenido(a): <?php echo $_SESSION["username"]; ?></a>

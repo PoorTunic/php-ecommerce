@@ -27,6 +27,9 @@
     <a class="nav-link <?php echo $load == 'slider' ? 'active disabled' : '' ?>" href="?content=slider">Slider</a>
   </li>
   <li class="nav-item">
+    <a class="nav-link <?php echo $load == 'related-images' ? 'active disabled' : '' ?>" href="?content=related-images">Img. Rel.</a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link <?php echo $load == 'logout' ? 'active disabled' : '' ?>" value="logout" href="../../php/logout.php?exit=true">Salir</a>
   </li>
 </ul>

@@ -8,7 +8,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información</title>
-
+    <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="../css/bootstrap.min.css" >
     <link rel="stylesheet" href="../css/style.css">
     <link href="../open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
@@ -140,7 +140,7 @@ session_start();
           <?php
           $conn = connect_db();
           $contadorimg = 0;
-          $qryimgrel = "SELECT imagen FROM t_imagenes WHERE id_producto = $id";
+          $qryimgrel = "SELECT imagen FROM t_imagenes WHERE id_producto = $id and status = 1";
           $resultimgrel = mysqli_query($conn, $qryimgrel);
           if(mysqli_num_rows($resultimgrel) > 0){
           while($image=mysqli_fetch_assoc($resultimgrel)){

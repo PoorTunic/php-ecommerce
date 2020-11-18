@@ -8,7 +8,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información</title>
-
+    <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="../css/bootstrap.min.css" >
     <link rel="stylesheet" href="../css/style.css" >
 
@@ -232,7 +232,7 @@ function gotologin(){
     Su compra se ha realizado con éxito <a target="_blank" href="../<?= $pdfroute ?>" class="alert-link">Haga clic aquí para ver su comprobante</a>. Su pedido se está procesando.
   </div>
   <?php
-    } 
+    }
   ?>
 
   <table class="table table-bordered">
@@ -307,12 +307,18 @@ function gotologin(){
     if(isset($_SESSION['cart'])){
       if(count($_SESSION['cart']) > 0){
         if(isset($_SESSION['iduser'])){
+          if($_SESSION['logged'] == true){
   ?>
   <form action="cart.php" method="post">
     <input type="hidden" name="correo" value="<?= $_SESSION['username'] ?>">
     <button type="submit" class="btn btn-success" name="comprar">Comprar estos artículos</button>
   </form>
   <?php
+          } else {
+  ?>
+  <button type="button" class="btn btn-success" onclick="location.href= 'delivery.php'">Comprar estos artículos</button>
+  <?php
+          }
         } else {
   ?>
   <button type="button" class="btn btn-success" onclick="gotologin()">Comprar estos artículos</button>
@@ -342,6 +348,7 @@ function gotologin(){
       }
     }
   ?>
+  <br>
   <br>
   <?php require "../php/footer.php" ?>
 </body>

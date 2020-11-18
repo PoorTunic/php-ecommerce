@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ingresar</title>
-
+    <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="../css/bootstrap.min.css" >
     <link rel="stylesheet" href="../css/style.css">
 
@@ -46,7 +46,7 @@
             <div class="jumbotron" style="background: #586FD4;">
                 <div class="form-group row my-auto d-flex justify-content-between">
                     <button name="submit" type="submit" class="btn btn-light col-3 col-sm-3 col-md-4 col-lg-4 col-xl-4" style="font-size: 14px;">Ingresar</button>
-                    <button name="reset" type="submit" class="btn btn-warning col-8 col-sm-8 col-md-6 col-lg-6 col-xl-6" style="font-size: 14px;">Olvidé mi contraseña</button> </div>
+                    <button name="reset" type="reset" class="btn btn-warning col-8 col-sm-8 col-md-6 col-lg-6 col-xl-6" style="font-size: 14px;" onclick="location.href='restore_password.php'">Olvidé mi contraseña</button> </div>
             </div>
             <div class="error">
                 <?php

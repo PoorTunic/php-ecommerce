@@ -14,21 +14,27 @@ if (isset($_POST["submit"])) {
           $conn = connect_db();
           $result = login($conn, $username, $password);
           if (is_array($result)) {
-              $_SESSION["username"] = $username;
-              $_SESSION["iduser"] = $result['id_usuario'];
-              $_SESSION["logged"] = true;
+              if($result['status'] == 0){
+                $_SESSION["correounr"] = $username;
+                $_SESSION["logged"] = false;
+                header("Location: ../pages/delivery.php");
+              } else {
+                $_SESSION["username"] = $username;
+                $_SESSION["iduser"] = $result['id_usuario'];
+                $_SESSION["logged"] = true;
 
-              $_SESSION["level"] = $result["nevel"];
+                $_SESSION["level"] = $result["nevel"];
 
-              if ($result["nevel"] == 1 || $result["nevel"] == 2) {
-                  if ($result["nevel"] == 1) {
-                      $_SESSION["role"] = "admin";
-                  } else if ($result["nevel"] == 2) {
-                      $_SESSION["role"] = "manager";
-                  }
-                  header("Location: ../pages/admin/control.php");
-              } else if ($result["nevel"] == 3) {
-                  header("Location: ../index.php");
+                if ($result["nevel"] == 1 || $result["nevel"] == 2) {
+                    if ($result["nevel"] == 1) {
+                        $_SESSION["role"] = "admin";
+                    } else if ($result["nevel"] == 2) {
+                        $_SESSION["role"] = "manager";
+                    }
+                    header("Location: ../pages/admin/control.php");
+                } else if ($result["nevel"] == 3) {
+                    header("Location: ../index.php");
+                }
               }
           } else {
               header("Location: ../pages/login.php?err=Usuario/Contraseña incorrectos");

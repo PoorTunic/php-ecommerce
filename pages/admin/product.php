@@ -141,65 +141,70 @@
 
 
       $imagen = $_FILES['archivo']['name'];
-      echo "<script>alert('$imagen')</script>";
+
       $ruta_imagen = '../../img/';
       $cat = $_POST['cat'];
+      $count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT count(*) as cou FROM t_productos WHERE producto = '$prod'"))["cou"];
       $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
       $ins = "INSERT INTO t_productos VALUES (null, '$prod', $preven, '$desc', '$ruta_imagen', $idcat)";
 
       $info = "";
 
+      if($count == 0){
+        if($conn->query($ins) === TRUE){
+          if($rowsql=mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_producto as id, imagen FROM t_productos ORDER by id_producto DESC LIMIT 1"))){
+              $rutaind = "";
+              $rutaalt = "";
+              $filename = "";
+              if($_FILES["archivosr"]['name'][0] != "" && $_FILES["archivosr"]['name'][0] != null){
 
-      if($conn->query($ins) === TRUE){
-        if($rowsql=mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_producto as id, imagen FROM t_productos ORDER by id_producto DESC LIMIT 1"))){
-            $rutaind = "";
-            $rutaalt = "";
-            $filename = "";
-            if($_FILES["archivosr"]['name'][0] != "" && $_FILES["archivosr"]['name'][0] != null){
+                foreach($_FILES["archivosr"]['tmp_name'] as $key => $tmp_name){
 
-              foreach($_FILES["archivosr"]['tmp_name'] as $key => $tmp_name){
+              		if($_FILES["archivosr"]["name"][$key]) {
+              			$filename = $_FILES["archivosr"]["name"][$key]; //Obtenemos el nombre original del archivo
+              			$source = $_FILES["archivosr"]["tmp_name"][$key]; //Obtenemos un nombre temporal del archivo
+                    $id = $rowsql['id'];
+              			$directorio = $rowsql["imagen"]; //Declaramos un  variable con la ruta donde guardaremos los archivos
 
-            		if($_FILES["archivosr"]["name"][$key]) {
-            			$filename = $_FILES["archivosr"]["name"][$key]; //Obtenemos el nombre original del archivo
-            			$source = $_FILES["archivosr"]["tmp_name"][$key]; //Obtenemos un nombre temporal del archivo
-                  $id = $rowsql['id'];
-            			$directorio = $rowsql["imagen"]; //Declaramos un  variable con la ruta donde guardaremos los archivos
+              			$dir=opendir($directorio); //Abrimos el directorio de destino
+              			$target_path = '../../img/'.$id.'_'.$filename; //Indicamos la ruta de destino, así como el nombre del archivo
 
-            			$dir=opendir($directorio); //Abrimos el directorio de destino
-            			$target_path = '../../img/'.$id.'_'.$filename; //Indicamos la ruta de destino, así como el nombre del archivo
+                    if(copy($source, $target_path)){
+                      $ruta = 'img/'.$id.'_'.$filename;
+                      $idprod = $rowsql["id"];
+                      $insimgslider = "INSERT INTO t_imagenes VALUES (null, '$ruta', $idprod, 1, 1)";
+                      $conn->query($insimgslider);
+                    }
 
-                  if(copy($source, $target_path)){
-                    $ruta = 'img/'.$id.'_'.$filename;
-                    $idprod = $rowsql["id"];
-                    $insimgslider = "INSERT INTO t_imagenes VALUES (null, '$ruta', $idprod, 1, 1)";
-                    $conn->query($insimgslider);
+              			closedir($dir); //Cerramos el directorio de destino
+              		}
+              	}
+              }
+
+              if($imagen != ""){
+                $rutalt = 'img/'.$rowsql["id"].'_m_'.$imagen;
+                $rutaind = $ruta_imagen.$rowsql["id"].'_m_'.$imagen;
+
+                if($conn->query("UPDATE t_productos SET imagen = '$rutalt' WHERE id_producto = ".$rowsql["id"])){
+                  if(copy($_FILES["archivo"]["tmp_name"], $rutaind)){
+                    $info = "Producto agregado. Se actualizará la lista de productos.";
                   }
-
-            			closedir($dir); //Cerramos el directorio de destino
-            		}
-            	}
-            }
-
-            if($imagen != ""){
-              $rutalt = 'img/'.$rowsql["id"].'_m_'.$imagen;
-              $rutaind = $ruta_imagen.$rowsql["id"].'_m_'.$imagen;
-
-              if($conn->query("UPDATE t_productos SET imagen = '$rutalt' WHERE id_producto = ".$rowsql["id"])){
-                if(copy($_FILES["archivo"]["tmp_name"], $rutaind)){
-                  $info = "Producto agregado. Se actualizará la lista de productos.";
+                }
+              } else {
+                $rutalt = 'img/default.jpg';
+                if($conn->query("UPDATE t_productos SET imagen = '$rutalt' WHERE id_producto = ".$rowsql["id"])){
+                    $info = "Producto agregado. Se actualizará la lista de productos.";
                 }
               }
-            } else {
-              $rutalt = 'img/default.jpg';
-              if($conn->query("UPDATE t_productos SET imagen = '$rutalt' WHERE id_producto = ".$rowsql["id"])){
-                  $info = "Producto agregado. Se actualizará la lista de productos.";
-              }
-            }
+          }
+        } else {
+          $info = "Error en la inserción de los datos, vuelva a intentarlo.";
         }
       } else {
-        $info = "Error en la inserción de los datos, vuelva a intentarlo.";
+          $info = "Ya existe un producto con esas características. No se insertará el producto.";
       }
+
       echo "<div class='modal' tabindex='-1' role='dialog' id='myModal'>
               <div class='modal-dialog' role='document'>
                 <div class='modal-content'>
@@ -213,7 +218,7 @@
                     <p>$info</p>
                   </div>
                   <div class='modal-footer'>
-                    <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart($np + 1)'>Ver producto agregado</button>
+                    <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart($np + 1)'>De acuerdo</button>
                   </div>
                 </div>
               </div>
@@ -634,59 +639,84 @@
     $desc = $_POST['desc'];
     $id = $_POST['idprod'];
     $rutaimg = $_POST['rutaimg'];
+    $count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT count(*) as cou FROM t_productos WHERE producto = '$prod'"))["cou"];
 
-    if(isset($_FILES['archivo']['tmp_name']) && $_FILES['archivo']['tmp_name'] != ""){
-      $imagen = $_FILES['archivo']['name'];
-      $ruta_imagen = '../../img/';
-      $cat = $_POST['cat'];
-      $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
+    if($count == 0){
 
-      $rutalt = 'img/'.$id.'_m_'.$imagen;
-      $rutaind = $ruta_imagen.$id.'_m_'.$imagen;
+      if(isset($_FILES['archivo']['tmp_name']) && $_FILES['archivo']['tmp_name'] != ""){
+        $imagen = $_FILES['archivo']['name'];
+        $ruta_imagen = '../../img/';
+        $cat = $_POST['cat'];
+        $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
 
-      $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$rutalt', id_categoria = $idcat WHERE id_producto = ".$id;
-      $info = "";
+        $rutalt = 'img/'.$id.'_m_'.$imagen;
+        $rutaind = $ruta_imagen.$id.'_m_'.$imagen;
+
+        $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$rutalt', id_categoria = $idcat WHERE id_producto = ".$id;
+        $info = "";
 
 
-      if($conn->query($upd) === TRUE){
-        if(copy($_FILES["archivo"]["tmp_name"], $rutaind)){
-          $info = "Producto actualizado. Se actualizará la lista de productos.";
+        if($conn->query($upd) === TRUE){
+          if(copy($_FILES["archivo"]["tmp_name"], $rutaind)){
+            $info = "Producto actualizado. Se actualizará la lista de productos.";
+          }
+        } else {
+          $info = "Error en la actualización de los datos, vuelva a intentarlo.";
         }
-      } else {
-        $info = "Error en la actualización de los datos, vuelva a intentarlo.";
-      }
-      echo "<div class='modal' tabindex='-1' role='dialog' id='updModal'>
-              <div class='modal-dialog' role='document'>
-                <div class='modal-content'>
-                  <div class='modal-header'>
-                    <h5 class='modal-title'>Cuadro de información</h5>
-                    <button type='button' class='close' data-dismiss='modal' aria-label='Cerrar'  onclick='goToPart(document.getElementById(\"parte\").value);'>
-                      <span aria-hidden='true'>&times;</span>
-                    </button>
-                  </div>
-                  <div class='modal-body'>
-                    <p>$info</p>
-                  </div>
-                  <div class='modal-footer'>
-                    <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart(document.getElementById(\"parte\").value);'>De acuerdo</button>
+        echo "<div class='modal' tabindex='-1' role='dialog' id='updModal'>
+                <div class='modal-dialog' role='document'>
+                  <div class='modal-content'>
+                    <div class='modal-header'>
+                      <h5 class='modal-title'>Cuadro de información</h5>
+                      <button type='button' class='close' data-dismiss='modal' aria-label='Cerrar'  onclick='goToPart(document.getElementById(\"parte\").value);'>
+                        <span aria-hidden='true'>&times;</span>
+                      </button>
+                    </div>
+                    <div class='modal-body'>
+                      <p>$info</p>
+                    </div>
+                    <div class='modal-footer'>
+                      <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart(document.getElementById(\"parte\").value);'>De acuerdo</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>";
-      echo "<script>$('#updModal').modal('show');</script>";
-    } else {
-
-      $cat = $_POST['cat'];
-      $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
-
-      $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$rutalt', id_categoria = $idcat WHERE id_producto = ".$id;
-      $info = "";
-
-      if($conn->query($upd) === TRUE){
-        $info = "Producto actualizado. Se actualizará la lista de productos.";
+              </div>";
+        echo "<script>$('#updModal').modal('show');</script>";
       } else {
-        $info = "Error en la actualización de los datos, vuelva a intentarlo.";
+
+        $cat = $_POST['cat'];
+        $idcat = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id_categoria FROM t_categorias WHERE categoria = '$cat'"))["id_categoria"];
+
+        $upd = "UPDATE t_productos SET producto = '$prod', preven = $preven, descripcion = '$desc', imagen = '$rutalt', id_categoria = $idcat WHERE id_producto = ".$id;
+        $info = "";
+
+        if($conn->query($upd) === TRUE){
+          $info = "Producto actualizado. Se actualizará la lista de productos.";
+        } else {
+          $info = "Error en la actualización de los datos, vuelva a intentarlo.";
+        }
+        echo "<div class='modal' tabindex='-1' role='dialog' id='updModal'>
+                <div class='modal-dialog' role='document'>
+                  <div class='modal-content'>
+                    <div class='modal-header'>
+                      <h5 class='modal-title'>Cuadro de información</h5>
+                      <button type='button' class='close' data-dismiss='modal' aria-label='Cerrar' onclick='goToPart(document.getElementById(\"parte\").value);'>
+                        <span aria-hidden='true'>&times;</span>
+                      </button>
+                    </div>
+                    <div class='modal-body'>
+                      <p>$info</p>
+                    </div>
+                    <div class='modal-footer'>
+                      <button type='button' class='btn btn-primary' data-dismiss='modal' onclick='goToPart(document.getElementById(\"parte\").value);'>De acuerdo</button>
+                    </div>
+                  </div>
+                </div>
+              </div>";
+        echo "<script>$('#updModal').modal('show');</script>";
       }
+    } else {
+      $info = "Ya existe un producto con esas características. No se actualizará el producto.";
       echo "<div class='modal' tabindex='-1' role='dialog' id='updModal'>
               <div class='modal-dialog' role='document'>
                 <div class='modal-content'>
