@@ -118,10 +118,13 @@
 ?>
 <nav class="navbar navbar-light bg-light justify-content-between">
   <button type="button" class="btn btn-primary" onclick="location.href = 'control.php?content=product'">Nueva compra</button>
-  <form class="form-inline" action="control.php?content=purchase" method="post">
-    <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" id="data" name="data" value="<?php echo $dato != ""? $dato : "" ?>" required>
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buscarDato" name="buscarDato">Buscar</button>
-  </form>
+  <!--form class="form-inline" action="control.php?content=category" method="post"-->
+  <div class="">
+    <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" id="data" name="data" value="<?php echo $dato != ""? $dato : "" ?>" onkeyup="search()" required>
+    <!--button class="btn btn-outline-success my-2 my-sm-0" type="button" id="buscarDato" name="buscarDato" >Buscar</button-->
+  </div>
+    <!--button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buscarDato" name="buscarDato">Buscar</button-->
+  <!--/form-->
 </nav>
 
 <div class="table-responsive">
@@ -185,7 +188,36 @@
     </li>
   </ul>
 </nav>
+<script type="text/javascript">
+  function search(){
 
+    var dato = document.getElementById('data').value;
+
+    //var datos = "buscar=true&dato=" + dato;
+    var data = new FormData();
+    data.append('buscarDato', 'true');
+    data.append('data', dato);
+
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "?content=purchase");
+      xhr.send(data);
+      //xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4){
+          document.body.innerHTML = xhr.responseText;
+          var elemLen = document.getElementById("data").value.length;
+
+          document.getElementById("data").selectionStart = elemLen;
+          document.getElementById("data").selectionEnd = elemLen;
+
+          document.getElementById("data").focus();
+        }
+      }
+    
+  }
+</script>
 <?php
   function modalforupdate($id, $part){
     $conn = connect_db();
@@ -294,7 +326,7 @@
       $precom = $_POST['precompra'];
       $cantidad = $_POST['cantidad'];
       $id = $_POST['idcompra'];
-      
+
       $upd = "UPDATE t_compras SET fecha = '$fecha', id_proveedor = (SELECT id_proveedor FROM t_proveedores WHERE proveedor = '$prov'), precompra = $precom, cantidad = $cantidad WHERE id_compra = ".$id;
       $info = "";
 

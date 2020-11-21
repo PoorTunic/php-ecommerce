@@ -74,10 +74,12 @@ recognize();
               ?>
 
             </div>
-            <form class="form-inline" action="index.php" method="post">
+            <!--form class="form-inline" action="index.php" method="post"-->
+            <div class="form-inline">
               <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" id="dato" name="dato" required>
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="buscar" name="buscar">Buscar</button>
-            </form>
+              <button class="btn btn-outline-success my-2 my-sm-0" type="reset " id="buscar" name="buscar" onclick="search();">Buscar</button>
+            </div>
+            <!--/form-->
             <button type="button" class="btn btn-outline-ligth" onclick="go('/cart');">
                 <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-cart4" fill="white" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2h3V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2h3V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" />
@@ -92,11 +94,14 @@ recognize();
     $conn = connect_db();
     ?>
 
+
     <br>
     <h2>Bienvenido a nuestra tienda</h2>
     <br>
+
     <?php
     if(isset($_POST['buscar'])){
+
       $dato = $_POST['dato'];
     ?>
     <div class="card-group">
@@ -129,7 +134,7 @@ recognize();
           <?php
             $conn = connect_db();
             $counter = 0;
-            $indicators = mysqli_query($conn, "SELECT id_producto, imagen FROM t_imagenes WHERE status = 1 and tipo = 2 ORDER by imagen DESC ");
+            $indicators = mysqli_query($conn, "SELECT t_imagenes.id_producto, t_imagenes.imagen, producto, descripcion FROM t_imagenes INNER JOIN t_productos ON t_productos.id_producto = t_imagenes.id_producto WHERE status = 1 and tipo = 2 ORDER by t_imagenes.imagen DESC");
             while($row = mysqli_fetch_assoc($indicators)){
               if($counter == 0){
           ?>
@@ -149,18 +154,26 @@ recognize();
           <?php
             $conn = connect_db();
             $counter = 0;
-            $images = mysqli_query($conn, "SELECT id_producto, imagen FROM t_imagenes WHERE status = 1 and tipo = 2 ORDER by imagen DESC ");
+            $images = mysqli_query($conn, "SELECT t_imagenes.id_producto, t_imagenes.imagen, producto, descripcion FROM t_imagenes INNER JOIN t_productos ON t_productos.id_producto = t_imagenes.id_producto WHERE status = 1 and tipo = 2 ORDER by t_imagenes.imagen DESC");
             while($row = mysqli_fetch_assoc($images)){
               if($counter == 0){
           ?>
           <div class="carousel-item active">
             <img class="d-block w-100" src="<?= $row['imagen']?>" style="max-height: 800px;" onclick="location.href='pages/product.php?id=<?= $row['id_producto']?>'">
+            <div class="carousel-caption d-none d-md-block">
+              <h5><?=$row['producto']?></h5>
+              <p><?=$row['descripcion']?></p>
+            </div>
           </div>
           <?php
               } else {
           ?>
           <div class="carousel-item">
             <img class="d-block w-100" src="<?= $row['imagen']?>" style="max-height: 800px;" onclick="location.href='pages/product.php?id=<?= $row['id_producto']?>'">
+            <div class="carousel-caption d-none d-md-block">
+              <h5><?=$row['producto']?></h5>
+              <p><?=$row['descripcion']?></p>
+            </div>
           </div>
           <?php
               }
@@ -300,6 +313,31 @@ recognize();
   </div>
 
     <?php } ?>
+
+    <script type="text/javascript">
+      function search(){
+
+        var dato = document.getElementById('dato').value;
+
+        //var datos = "buscar=true&dato=" + dato;
+        var data = new FormData();
+        data.append('buscar', 'true');
+        data.append('dato', dato);
+
+        if(dato != ""){
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "index.php");
+          xhr.send(data);
+          //xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+          xhr.onreadystatechange = function(){
+            if(xhr.readyState == 4){
+              document.body.innerHTML = xhr.responseText;
+            }
+          }
+        }
+      }
+    </script>
     <br>
     <br>
     <?php require "php/footer.php" ?>
