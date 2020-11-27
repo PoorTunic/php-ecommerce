@@ -26,12 +26,81 @@ session_start();
     document.getElementById("productImage").setAttribute("src", relat);
     }
 </script>
-<body class="container">
-    <?php require "./../php/header.php" ?>
+<?php
+  if(isset($_POST['add'])){
+    $idpr = $_POST['idprod'];
+    $prod = $_POST['prod'];
+    $imagen = $_POST['imagen'];
+    $precio = $_POST['precio'];
 
+    $producto = array(
+      'id' => $idpr,
+      'producto' => $prod,
+      'imagen' => $imagen,
+      'precio' => $precio,
+      'cantidad' => 1,
+      'subtotal' => $precio
+    );
+
+    $pos = 0;
+    $showmessage = false;
+    $message = "";
+    if(isset($_SESSION['cart'])){
+      $coincart = 0;
+      foreach ($_SESSION['cart'] as $article => $value) {
+        if($value['id'] == $idpr){
+          $coincart += 1;
+        }
+      }
+
+      if($coincart == 0){
+        $pos = count($_SESSION['cart']);
+        $_SESSION['cart'][$pos] = $producto;
+
+        $showmessage = TRUE;
+        $success = true;
+        $message = "Producto agregado al carrito";
+
+      } else {
+        $showmessage = TRUE;
+        $success = false;
+        $message = "Ese producto ya se encuentra en el carrito";
+      }
+
+    } else {
+      $pos = 0;
+      $_SESSION['cart'][$pos] = $producto;
+      $showmessage = TRUE;
+      $success = true;
+      $message = "Producto agregado al carrito";
+    }
+
+  }
+  //print_r($_SESSION);
+?>
+<body class="container">
+    <?php require "../php/header.php" ?>
+    <br>
+    <div id="message">
+      <?php
+      if(isset($showmessage)){
+        if($showmessage){
+      ?>
+      <div class='alert alert-<?= $success? "success" : "danger" ?> alert-dismissible fade show' role='alert'>
+        <?= $message ?>
+        <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+          <span aria-hidden='true'>&times;</span>
+        </button>
+      </div>
+      <?php
+        }
+      }
+      ?>
+    </div>
+    <br>
     <?php
 
-    require_once "../php/product_action.php";
+    require "../php/product_action.php";
 
     $id_producto = -1;
     if (isset($_GET["id"])) {
@@ -53,58 +122,7 @@ session_start();
     $cat = $result['id_categoria'];
     ?>
 
-
     <section class="container">
-        <br>
-        <?php
-          if(isset($_POST['add'])){
-            $idpr = $_POST['idprod'];
-            $prod = $_POST['prod'];
-            $imagen = $_POST['imagen'];
-            $precio = $_POST['precio'];
-
-            $producto = array(
-              'id' => $idpr,
-              'producto' => $prod,
-              'imagen' => $imagen,
-              'precio' => $precio,
-              'cantidad' => 1,
-              'subtotal' => $precio
-            );
-
-            $pos = 0;
-            if(isset($_SESSION['cart'])){
-              $coincart = 0;
-              foreach ($_SESSION['cart'] as $article => $value) {
-                if($value['id'] == $idpr){
-                  $coincart += 1;
-                }
-              }
-
-              if($coincart == 0){
-                $pos = count($_SESSION['cart']);
-                $_SESSION['cart'][$pos] = $producto;
-                print_r("<div id='message' class='alert alert-success container'>
-                  Producto agregado al carrito
-                </div>");
-              } else {
-                print_r("<section id='message' class='alert alert-danger container'>
-                  Ese producto ya se encuentra en el carrito
-                </section>");
-              }
-
-            } else {
-              $pos = 0;
-              $_SESSION['cart'][$pos] = $producto;
-              print_r("<section id='message' class='alert alert-success container'>
-                Producto agregado al carrito
-              </section>");
-            }
-
-          }
-          //print_r($_SESSION);
-        ?>
-        <br>
         <div class="card-group">
           <div class="card text-white bg-primary col-12 col-sm-6">
             <div class="card-header">Características del producto</div>
